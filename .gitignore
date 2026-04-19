@@ -1,0 +1,7 @@
+node_modules/
+.env
+uploads/
+*.png
+*.jpg
+.DS_Store
+.vercel/

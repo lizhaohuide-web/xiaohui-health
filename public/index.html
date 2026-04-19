@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#1a2419">
+<title>流金享老 · AI 體檢診脈箋</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23a83232'/><text x='50' y='72' font-size='62' text-anchor='middle' fill='%23f4e9cf' font-family='serif' font-weight='700'>診</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+<link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+<link href="https://fonts.loli.net/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+<style>
+  /* ==================== TOKENS ==================== */
+  :root {
+    /* 墨色 */
+    --ink:        #1a1410;
+    --ink-soft:   #4a3d2e;
+    --ink-mid:    #6b5a44;
+    --ink-light:  #8b7958;
+    --ink-faint:  #b6a585;
+
+    /* 紙色 */
+    --paper:      #f4e9cf;
+    --paper-warm: #ede0bf;
+    --paper-deep: #e1d2a8;
+    --kraft:      #d8c39a;
+
+    /* 松煙 */
+    --pine:       #142016;
+    --pine-soft:  #1f2d22;
+    --pine-mid:   #2c3c2d;
+
+    /* 黄铜烫金 */
+    --brass:      #b8954a;
+    --brass-bright:#d4b063;
+    --brass-deep: #8a6b30;
+    --brass-shadow:#5e481e;
+
+    /* 朱砂 */
+    --vermilion:      #a8302a;
+    --vermilion-deep: #7d1e1a;
+    --vermilion-soft: #c75148;
+
+    /* 翠 / 茯苓 */
+    --jade:       #5b7551;
+    --jade-soft:  #8aa67d;
+
+    /* 警示 */
+    --warn-paper: #f7e6c2;
+    --warn-edge:  #c4974b;
+    --danger-paper:#f2d5cf;
+    --danger-edge: #a8302a;
+    --safe-paper: #dfe5d0;
+    --safe-edge:  #5b7551;
+
+    --shadow-paper: 0 1px 0 rgba(60,40,20,0.06), 0 6px 20px rgba(60,40,20,0.10);
+    --shadow-deep:  0 1px 0 rgba(0,0,0,0.4), 0 14px 38px rgba(0,0,0,0.35);
+
+    --serif:  'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', 'PingFang SC', serif;
+    --brush:  'Ma Shan Zheng', 'Noto Serif SC', serif;
+    --display:'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  }
+
+  /* ==================== RESET ==================== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: var(--serif);
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.78;
+    letter-spacing: 0.02em;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 20% 18%, rgba(168,48,42,0.05) 0, transparent 38%),
+      radial-gradient(circle at 82% 78%, rgba(184,149,74,0.07) 0, transparent 42%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.30 0 0 0 0 0.16 0 0 0 0.10 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-attachment: fixed;
+  }
+  button, input, textarea { font: inherit; color: inherit; background: none; border: none; outline: none; }
+  ::selection { background: var(--vermilion); color: var(--paper); }
+
+  .container {
+    max-width: 460px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; animation: fadeUp .5s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ==================== HERO (松煙 黑漆櫃) ==================== */
+  .hero {
+    position: relative;
+    padding: 56px 32px 56px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(212,176,99,0.12) 0%, transparent 60%),
+      linear-gradient(180deg, var(--pine) 0%, var(--pine-soft) 100%);
+    color: var(--paper);
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(184,149,74,0.55);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(184,149,74,0.25);
+    pointer-events: none;
+  }
+  .hero-nail {
+    position: absolute;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--brass-bright), var(--brass), var(--brass-shadow));
+    box-shadow: inset 0 -1px 1px rgba(0,0,0,0.4), 0 0 4px rgba(212,176,99,0.4);
+  }
+  .hero-nail.tl { top: 22px; left: 22px; }
+  .hero-nail.tr { top: 22px; right: 22px; }
+  .hero-nail.bl { bottom: 22px; left: 22px; }
+  .hero-nail.br { bottom: 22px; right: 22px; }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--serif);
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--brass-bright);
+    margin-bottom: 18px;
+    padding-left: 4px;
+  }
+  .hero-tag::before, .hero-tag::after {
+    content: '';
+    width: 22px; height: 1px;
+    background: var(--brass);
+    opacity: 0.7;
+  }
+
+  .hero-brand {
+    font-family: var(--display);
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    color: var(--brass-bright);
+    background: linear-gradient(180deg, #f0d488 0%, #c69b3a 50%, #8a6b30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+    margin-bottom: 18px;
+    padding-left: 4px;
+  }
+  .hero-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 18px;
+  }
+  .hero-divider .line {
+    height: 1px; flex: 1;
+    background: linear-gradient(90deg, transparent, var(--brass), transparent);
+  }
+  .hero-divider .glyph {
+    color: var(--brass-bright);
+    font-size: 10px;
+    letter-spacing: 0.4em;
+  }
+
+  .hero-tagline {
+    font-size: 14px;
+    color: rgba(244,233,207,0.78);
+    line-height: 1.9;
+    letter-spacing: 0.08em;
+    padding-left: 4px;
+  }
+  .hero-tagline strong {
+    color: var(--paper);
+    font-weight: 500;
+  }
+
+  .hero-seal {
+    position: absolute;
+    right: 36px;
+    bottom: 36px;
+    width: 64px;
+    height: 64px;
+    background: var(--vermilion);
+    color: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--brush);
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: 0;
+    transform: rotate(-6deg);
+    box-shadow:
+      inset 0 0 0 2px var(--vermilion-deep),
+      inset 0 0 12px rgba(0,0,0,0.25),
+      0 4px 14px rgba(168,48,42,0.4);
+    border-radius: 2px;
+  }
+  .hero-seal::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence baseFrequency='0.9'/><feColorMatrix values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1.5 -0.4'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
+    mix-blend-mode: screen;
+    opacity: 0.55;
+    pointer-events: none;
+    border-radius: 2px;
+  }
+
+  /* ==================== BODY (宣紙) ==================== */
+  .body-pad { padding: 36px 24px 60px; }
+
+  /* 章標題 */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-left: 2px;
+  }
+  .section-title .han {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.2em;
+    position: relative;
+  }
+  .section-title .han::before {
+    content: '';
+    position: absolute;
+    left: -10px; top: 4px; bottom: 4px;
+    width: 3px;
+    background: linear-gradient(180deg, var(--brass), var(--brass-deep));
+  }
+  .section-title .pinyin {
+    font-family: var(--serif);
+    font-size: 10px;
+    color: var(--ink-light);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+
+  /* ==================== UPLOAD ZONE (藥匣) ==================== */
+  .drug-box {
+    position: relative;
+    background: var(--paper-warm);
+    padding: 38px 24px 32px;
+    cursor: pointer;
+    transition: all .25s ease;
+    overflow: hidden;
+    border: 1px solid var(--brass-deep);
+    outline: 1px solid var(--brass-deep);
+    outline-offset: 4px;
+    margin: 6px 5px 28px;
+  }
+  .drug-box:active, .drug-box.dragover {
+    background: var(--paper-deep);
+    transform: scale(0.992);
+  }
+  .drug-handle {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 14px;
+    width: 60px;
+    height: 6px;
+    background: linear-gradient(180deg, var(--brass-bright), var(--brass-deep));
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 -1px 0 rgba(0,0,0,0.15);
+  }
+  .drug-handle::before, .drug-handle::after {
+    content: '';
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--brass-bright), var(--brass), var(--brass-shadow));
+    top: -1px;
+    box-shadow: inset 0 -1px 1px rgba(0,0,0,0.3);
+  }
+  .drug-handle::before { left: -16px; }
+  .drug-handle::after { right: -16px; }
+  .drug-corner {
+    position: absolute;
+    width: 14px; height: 14px;
+    border: 2px solid var(--brass);
+    opacity: .8;
+  }
+  .drug-corner.tl { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+  .drug-corner.tr { top: 6px; right: 6px; border-left: none; border-bottom: none; }
+  .drug-corner.bl { bottom: 6px; left: 6px; border-right: none; border-top: none; }
+  .drug-corner.br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+
+  .drug-icon {
+    width: 56px; height: 56px;
+    margin: 8px auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brass-deep);
+  }
+  .drug-icon svg { width: 100%; height: 100%; }
+
+  .drug-title {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--ink);
+    letter-spacing: 0.25em;
+    margin-bottom: 6px;
+  }
+  .drug-desc {
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-mid);
+    letter-spacing: 0.05em;
+  }
+  .drug-box input { display: none; }
+
+  /* Preview thumbnails */
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0 5px 28px;
+  }
+  .preview-item {
+    position: relative;
+    aspect-ratio: 3/4;
+    background: var(--paper-warm);
+    border: 1px solid var(--brass-deep);
+    overflow: hidden;
+  }
+  .preview-item img { width: 100%; height: 100%; object-fit: cover; filter: sepia(.08); }
+  .preview-item .pdf-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--paper-deep), var(--kraft));
+    gap: 6px;
+    color: var(--ink-soft);
+  }
+  .preview-item .pdf-placeholder .pdf-icon {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--vermilion);
+    letter-spacing: 0.15em;
+    border: 1px solid currentColor;
+    padding: 2px 6px;
+  }
+  .preview-item .pdf-placeholder .pdf-name {
+    font-size: 10px;
+    font-weight: 500;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 4px;
+  }
+  .preview-item .remove {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 26px; height: 26px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 1px solid var(--brass);
+  }
+
+  /* ==================== MODE CARDS (兩本診冊) ==================== */
+  .mode-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 5px 28px;
+  }
+  .mode-card {
+    position: relative;
+    padding: 22px 16px 18px;
+    cursor: pointer;
+    transition: all .25s ease;
+    text-align: center;
+    border: 1px solid var(--ink-faint);
+    background: var(--paper-warm);
+  }
+  .mode-card .ribbon {
+    position: absolute;
+    top: 0; left: 14px;
+    width: 6px;
+    height: 28px;
+    background: var(--ink-faint);
+    transition: background .25s;
+  }
+  .mode-card .mode-han {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.3em;
+    margin-bottom: 6px;
+    padding-left: 0.3em;
+  }
+  .mode-card .mode-desc {
+    font-size: 11px;
+    color: var(--ink-mid);
+    letter-spacing: 0.15em;
+  }
+  .mode-card .mode-mark {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    width: 22px; height: 22px;
+    background: transparent;
+    color: var(--vermilion);
+    font-family: var(--brush);
+    font-size: 14px;
+    line-height: 22px;
+    text-align: center;
+    border: 1px solid currentColor;
+    opacity: 0;
+    transform: rotate(-6deg) scale(.8);
+    transition: all .25s ease;
+  }
+  .mode-card.selected {
+    background: var(--paper-deep);
+    border-color: var(--brass-deep);
+    box-shadow: inset 0 0 0 1px var(--brass-deep), 0 0 0 4px var(--paper), 0 0 0 5px var(--brass-deep);
+    margin: 4px;
+  }
+  .mode-card.selected .ribbon {
+    background: var(--vermilion);
+  }
+  .mode-card.selected .mode-mark {
+    opacity: 1;
+    transform: rotate(-6deg) scale(1);
+  }
+
+  /* ==================== INFO TOGGLE ==================== */
+  .info-block { margin: 0 5px 24px; }
+  .info-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--vermilion);
+    cursor: pointer;
+    font-weight: 500;
+    padding: 10px 4px;
+    letter-spacing: 0.1em;
+  }
+  .info-toggle .arrow {
+    display: inline-block;
+    width: 14px;
+    text-align: center;
+    transition: transform .2s;
+    color: var(--brass-deep);
+  }
+  .info-toggle.open .arrow { transform: rotate(90deg); }
+  .info-fields { display: none; padding-top: 8px; }
+  .info-fields.open { display: block; }
+  .info-field { margin-bottom: 14px; }
+  .info-field label {
+    display: block;
+    font-family: var(--display);
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.25em;
+    margin-bottom: 6px;
+  }
+  .info-field input, .info-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--paper-warm);
+    border: 1px solid var(--ink-faint);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.6;
+    transition: border-color .2s;
+  }
+  .info-field input::placeholder, .info-field textarea::placeholder {
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+  .info-field input:focus, .info-field textarea:focus {
+    border-color: var(--brass-deep);
+    background: var(--paper);
+  }
+  .info-field textarea { resize: vertical; min-height: 84px; }
+
+  /* ==================== SUBMIT (朱砂大印) ==================== */
+  .submit-btn {
+    position: relative;
+    display: block;
+    width: calc(100% - 10px);
+    margin: 16px 5px 16px;
+    padding: 18px;
+    background: var(--vermilion);
+    color: var(--paper);
+    cursor: pointer;
+    text-align: center;
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5em;
+    transition: all .15s;
+    border: 1px solid var(--vermilion-deep);
+    outline: 1px solid var(--vermilion-deep);
+    outline-offset: 3px;
+    box-shadow: 0 4px 0 rgba(125,30,26,0.4);
+  }
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/></svg>");
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+  .submit-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 rgba(125,30,26,0.4);
+  }
+  .submit-btn:disabled {
+    background: var(--kraft);
+    color: var(--ink-light);
+    border-color: var(--ink-light);
+    outline-color: var(--ink-light);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-light);
+    letter-spacing: 0.3em;
+    margin-top: 24px;
+  }
+  .footer-note .dot {
+    color: var(--brass);
+    margin: 0 6px;
+  }
+
+  /* ==================== LOADING (切脈) ==================== */
+  .loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 24px;
+    text-align: center;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(184,149,74,0.10) 0%, transparent 50%),
+      var(--paper);
+  }
+  .pulse-frame {
+    width: 220px;
+    height: 110px;
+    border: 1px solid var(--brass-deep);
+    outline: 1px solid var(--brass-deep);
+    outline-offset: 4px;
+    background: var(--paper-warm);
+    padding: 14px;
+    margin-bottom: 30px;
+    position: relative;
+  }
+  .pulse-frame::before, .pulse-frame::after {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--brass);
+  }
+  .pulse-frame::before { top: -3px; left: -3px; }
+  .pulse-frame::after { bottom: -3px; right: -3px; }
+  .pulse-svg {
+    width: 100%; height: 100%;
+    overflow: visible;
+  }
+  .pulse-svg path {
+    fill: none;
+    stroke: var(--vermilion);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: drawPulse 2.4s ease-in-out infinite;
+  }
+  .pulse-svg .baseline {
+    stroke: var(--brass);
+    stroke-width: 0.5;
+    stroke-dasharray: 2 2;
+    opacity: 0.5;
+    animation: none;
+  }
+  @keyframes drawPulse {
+    0%   { stroke-dashoffset: 600; }
+    60%  { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -600; }
+  }
+
+  .loading-han {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.5em;
+    margin-bottom: 12px;
+    padding-left: 0.5em;
+  }
+  .loading-step {
+    font-size: 14px;
+    color: var(--ink-mid);
+    letter-spacing: 0.15em;
+    line-height: 1.8;
+    min-height: 50px;
+  }
+  .loading-stages {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+    color: var(--ink-light);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+  }
+  .loading-stages .stage { transition: color .3s; }
+  .loading-stages .stage.active { color: var(--vermilion); font-weight: 700; }
+  .loading-stages .stage.done { color: var(--brass-deep); }
+  .loading-stages .sep { color: var(--ink-faint); font-size: 10px; }
+
+  .progress-rail {
+    width: 220px;
+    height: 3px;
+    background: var(--paper-deep);
+    margin-top: 24px;
+    border: 1px solid var(--ink-faint);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brass), var(--brass-bright));
+    transition: width .5s ease;
+    width: 0%;
+  }
+
+  .cancel-btn {
+    margin-top: 36px;
+    padding: 10px 32px;
+    color: var(--ink-mid);
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: 0.4em;
+    cursor: pointer;
+    border: 1px solid var(--ink-faint);
+    transition: all .2s;
+  }
+  .cancel-btn:active {
+    background: var(--paper-warm);
+    color: var(--vermilion);
+    border-color: var(--vermilion);
+  }
+
+  /* ==================== ERROR ==================== */
+  .error-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 30px;
+    text-align: center;
+  }
+  .error-stamp {
+    width: 78px; height: 78px;
+    background: var(--vermilion);
+    color: var(--paper);
+    font-family: var(--brush);
+    font-size: 44px;
+    line-height: 78px;
+    text-align: center;
+    margin-bottom: 24px;
+    transform: rotate(-7deg);
+    box-shadow: inset 0 0 0 2px var(--vermilion-deep), inset 0 0 14px rgba(0,0,0,0.25);
+  }
+  .error-title {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--vermilion-deep);
+    letter-spacing: 0.4em;
+    margin-bottom: 12px;
+  }
+  .error-msg {
+    font-size: 14px;
+    color: var(--ink-mid);
+    line-height: 1.9;
+    max-width: 320px;
+    margin-bottom: 32px;
+  }
+  .retry-btn {
+    padding: 14px 42px;
+    background: var(--vermilion);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 15px;
+    letter-spacing: 0.4em;
+    cursor: pointer;
+    margin-bottom: 16px;
+    border: 1px solid var(--vermilion-deep);
+    outline: 1px solid var(--vermilion-deep);
+    outline-offset: 3px;
+  }
+  .back-link {
+    font-size: 13px;
+    color: var(--ink-mid);
+    cursor: pointer;
+    letter-spacing: 0.2em;
+    text-decoration: underline;
+    text-decoration-color: var(--brass);
+    text-underline-offset: 4px;
+  }
+
+  /* ==================== REPORT (診脈箋) ==================== */
+  .report-cover {
+    position: relative;
+    padding: 40px 28px 30px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(212,176,99,0.18) 0%, transparent 65%),
+      linear-gradient(180deg, var(--pine) 0%, var(--pine-soft) 100%);
+    color: var(--paper);
+    overflow: hidden;
+  }
+  .report-cover::before {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(184,149,74,0.55);
+    pointer-events: none;
+  }
+  .report-cover::after {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border: 1px solid rgba(184,149,74,0.22);
+    pointer-events: none;
+  }
+  .cover-brand-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--display);
+    font-size: 12px;
+    color: var(--brass-bright);
+    letter-spacing: 0.4em;
+    margin-bottom: 14px;
+  }
+  .cover-brand-row::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--brass), transparent);
+  }
+  .cover-title {
+    font-family: var(--display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--paper);
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+    padding-left: 0.18em;
+  }
+  .cover-subtitle {
+    font-size: 12px;
+    color: var(--brass-bright);
+    letter-spacing: 0.4em;
+    margin-bottom: 22px;
+  }
+  .cover-meta {
+    font-size: 12px;
+    color: rgba(244,233,207,0.72);
+    letter-spacing: 0.18em;
+    border-top: 1px solid rgba(184,149,74,0.35);
+    padding-top: 14px;
+  }
+  .cover-meta .han { color: var(--brass-bright); margin-right: 6px; }
+  .cover-stamp {
+    position: absolute;
+    bottom: 28px;
+    right: 28px;
+    width: 56px; height: 56px;
+    background: var(--vermilion);
+    color: var(--paper);
+    font-family: var(--brush);
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transform: rotate(-7deg);
+    box-shadow: inset 0 0 0 2px var(--vermilion-deep), inset 0 0 10px rgba(0,0,0,0.25), 0 4px 14px rgba(168,48,42,0.4);
+  }
+
+  .report-body {
+    padding: 32px 22px 18px;
+  }
+
+  /* Score 體質評等 */
+  .score-card {
+    position: relative;
+    background: var(--paper-warm);
+    padding: 26px 20px 24px;
+    text-align: center;
+    margin-bottom: 28px;
+    border: 1px solid var(--brass-deep);
+    outline: 1px solid var(--brass-deep);
+    outline-offset: 4px;
+  }
+  .score-card .corner {
+    position: absolute;
+    width: 12px; height: 12px;
+    border: 1.5px solid var(--brass-deep);
+  }
+  .score-card .corner.tl { top: 4px; left: 4px; border-right:none; border-bottom:none; }
+  .score-card .corner.tr { top: 4px; right: 4px; border-left:none; border-bottom:none; }
+  .score-card .corner.bl { bottom: 4px; left: 4px; border-right:none; border-top:none; }
+  .score-card .corner.br { bottom: 4px; right: 4px; border-left:none; border-top:none; }
+  .score-card .label {
+    font-family: var(--display);
+    font-size: 12px;
+    color: var(--ink-mid);
+    letter-spacing: 0.5em;
+    margin-bottom: 6px;
+  }
+  .score-num {
+    display: inline-flex;
+    align-items: baseline;
+    font-family: var(--display);
+    color: var(--ink);
+    line-height: 1;
+  }
+  .score-num .big {
+    font-size: 76px;
+    font-weight: 700;
+    background: linear-gradient(180deg, #b3853e 0%, #8a6b30 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .score-num .slash { font-size: 24px; color: var(--ink-light); margin: 0 4px; }
+  .score-num .max { font-size: 22px; color: var(--ink-light); }
+  .score-level {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 18px;
+    background: var(--vermilion);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: 0.3em;
+  }
+  .score-level.tier-1 { background: var(--jade); }
+  .score-level.tier-2 { background: var(--brass-deep); }
+  .score-level.tier-3 { background: var(--brass); color: var(--ink); }
+  .score-level.tier-4 { background: var(--vermilion-soft); }
+  .score-level.tier-5 { background: var(--vermilion-deep); }
+  .score-summary {
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+  }
+
+  /* Section card 古籍 */
+  .section-card {
+    background: var(--paper-warm);
+    margin-bottom: 22px;
+    border: 1px solid var(--ink-faint);
+    outline: 1px solid var(--ink-faint);
+    outline-offset: 3px;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--ink-faint);
+    background: linear-gradient(180deg, var(--paper) 0%, var(--paper-warm) 100%);
+  }
+  .section-head .stamp {
+    width: 30px; height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--brush);
+    font-size: 16px;
+    color: var(--paper);
+    background: var(--ink-mid);
+    margin-right: 12px;
+    flex-shrink: 0;
+    transform: rotate(-4deg);
+    line-height: 1;
+  }
+  .section-head .stamp.urgent { background: var(--vermilion); }
+  .section-head .stamp.watch  { background: var(--brass-deep); }
+  .section-head .stamp.safe   { background: var(--jade); }
+  .section-head .han {
+    flex: 1;
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.25em;
+  }
+  .section-head .pinyin {
+    font-size: 10px;
+    color: var(--ink-light);
+    letter-spacing: 0.3em;
+    margin-right: 10px;
+  }
+  .section-head .count {
+    font-family: var(--display);
+    font-size: 12px;
+    padding: 2px 8px;
+    color: var(--paper);
+    background: var(--ink-mid);
+    margin-right: 10px;
+    letter-spacing: 0.1em;
+  }
+  .section-head .count.urgent { background: var(--vermilion); }
+  .section-head .count.watch  { background: var(--brass-deep); }
+  .section-head .count.safe   { background: var(--jade); }
+  .section-head .chevron {
+    color: var(--ink-light);
+    font-family: var(--serif);
+    font-size: 14px;
+    width: 16px;
+    text-align: center;
+    transition: transform .2s;
+  }
+  .section-card.open .chevron { transform: rotate(45deg); }
+  .section-content {
+    padding: 0 18px 18px;
+    display: none;
+  }
+  .section-card.open .section-content { display: block; padding-top: 16px; }
+
+  /* Flag items (急/察) */
+  .flag-item {
+    padding: 14px;
+    margin-bottom: 12px;
+    background: var(--paper);
+    border-left: 3px solid var(--ink-faint);
+    position: relative;
+  }
+  .flag-item:last-child { margin-bottom: 0; }
+  .flag-item.urgent {
+    border-left-color: var(--vermilion);
+    background: var(--danger-paper);
+  }
+  .flag-item.watch {
+    border-left-color: var(--brass-deep);
+    background: var(--warn-paper);
+  }
+  .flag-title {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--ink);
+    letter-spacing: 0.1em;
+  }
+  .flag-item.urgent .flag-title { color: var(--vermilion-deep); }
+  .flag-item.watch  .flag-title { color: var(--brass-shadow); }
+  .flag-body {
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--ink-soft);
+  }
+  .flag-action {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--vermilion);
+    font-family: var(--display);
+    letter-spacing: 0.1em;
+  }
+  .flag-action::before {
+    content: '⌖ ';
+    color: var(--brass);
+  }
+
+  /* Indicator row */
+  .indicator-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dotted var(--ink-faint);
+    font-size: 13px;
+  }
+  .indicator-row:last-child { border-bottom: none; }
+  .ind-name { flex: 1; color: var(--ink-soft); font-weight: 500; }
+  .ind-value {
+    width: 90px;
+    text-align: center;
+    font-family: var(--display);
+    font-weight: 700;
+  }
+  .ind-ref {
+    width: 90px;
+    text-align: right;
+    color: var(--ink-light);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+  .ind-high { color: var(--vermilion); }
+  .ind-low  { color: var(--brass-deep); }
+  .ind-normal { color: var(--jade); }
+
+  /* Green tags 安和之徵 */
+  .green-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+  }
+  .green-tag {
+    padding: 4px 10px;
+    background: var(--safe-paper);
+    border: 1px solid var(--safe-edge);
+    color: var(--jade);
+    font-size: 12px;
+    font-family: var(--display);
+    letter-spacing: 0.05em;
+  }
+  .green-tag::before {
+    content: '安 ';
+    font-family: var(--brush);
+    color: var(--vermilion);
+    margin-right: 3px;
+  }
+
+  /* Plan blocks */
+  .plan-block {
+    background: var(--paper);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-left: 2px solid var(--brass);
+  }
+  .plan-block:last-child { margin-bottom: 0; }
+  .plan-block .principle {
+    font-family: var(--display);
+    color: var(--vermilion-deep);
+    font-size: 14px;
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+    padding-left: 18px;
+    position: relative;
+  }
+  .plan-block .principle::before {
+    content: '訣';
+    position: absolute;
+    left: 0; top: 0;
+    width: 14px; height: 14px;
+    background: var(--vermilion);
+    color: var(--paper);
+    font-family: var(--brush);
+    font-size: 10px;
+    line-height: 14px;
+    text-align: center;
+  }
+
+  /* Diet two-column */
+  .food-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .food-box {
+    padding: 14px;
+    background: var(--paper-warm);
+    border: 1px solid var(--ink-faint);
+  }
+  .food-box.good { border-color: var(--safe-edge); background: var(--safe-paper); }
+  .food-box.bad  { border-color: var(--danger-edge); background: var(--danger-paper); }
+  .food-box .box-title {
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.2em;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed currentColor;
+  }
+  .food-box.good .box-title { color: var(--jade); }
+  .food-box.bad  .box-title { color: var(--vermilion-deep); }
+  .food-box .item {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--ink-soft);
+  }
+
+  /* Exercise weekly grid */
+  .exercise-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 10px;
+  }
+  .exercise-day {
+    text-align: center;
+    padding: 8px 2px;
+    background: var(--paper);
+    border: 1px solid var(--ink-faint);
+  }
+  .exercise-day .d-label {
+    font-family: var(--display);
+    font-size: 10px;
+    color: var(--ink-mid);
+    letter-spacing: 0.1em;
+  }
+  .exercise-day .d-icon {
+    font-size: 18px;
+    margin: 4px 0;
+    color: var(--brass-deep);
+  }
+  .exercise-day .d-type {
+    font-size: 9px;
+    color: var(--ink-light);
+    letter-spacing: 0.05em;
+  }
+
+  /* Supplement / Followup row */
+  .row-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dotted var(--ink-faint);
+    gap: 10px;
+  }
+  .row-item:last-child { border-bottom: none; }
+  .row-prio {
+    width: 40px;
+    flex-shrink: 0;
+    text-align: center;
+    font-family: var(--brush);
+    font-size: 14px;
+    color: var(--vermilion);
+  }
+  .row-info { flex: 1; min-width: 0; }
+  .row-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .row-detail {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-top: 2px;
+  }
+  .row-tail {
+    flex-shrink: 0;
+    font-family: var(--display);
+    font-size: 12px;
+    color: var(--vermilion-deep);
+    text-align: right;
+    letter-spacing: 0.1em;
+  }
+
+  /* Followup specific */
+  .followup-time {
+    width: 64px;
+    flex-shrink: 0;
+    font-family: var(--display);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--paper);
+    background: var(--ink-soft);
+    padding: 4px 6px;
+    text-align: center;
+    letter-spacing: 0.1em;
+  }
+  .followup-time.urgency-high   { background: var(--vermilion); }
+  .followup-time.urgency-medium { background: var(--brass-deep); }
+  .followup-time.urgency-low    { background: var(--jade); }
+
+  /* Plan list (general) */
+  .plan-list { list-style: none; margin: 0; padding: 0; }
+  .plan-list li {
+    font-size: 14px;
+    line-height: 1.9;
+    padding: 4px 0 4px 22px;
+    position: relative;
+    color: var(--ink-soft);
+  }
+  .plan-list li::before {
+    content: '◇';
+    position: absolute;
+    left: 4px;
+    color: var(--brass);
+  }
+
+  /* Risk row 警示 */
+  .risk-row {
+    padding: 12px 0;
+    border-bottom: 1px dotted var(--ink-faint);
+  }
+  .risk-row:last-child { border-bottom: none; }
+  .risk-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .risk-stars {
+    color: var(--vermilion);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+  .risk-name {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.1em;
+  }
+  .risk-path {
+    font-size: 12px;
+    color: var(--ink-mid);
+    line-height: 1.7;
+    padding-left: 4px;
+  }
+
+  /* Weekly plan card */
+  .week-card {
+    background: var(--paper);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-left: 3px solid var(--brass);
+    position: relative;
+  }
+  .week-label {
+    font-family: var(--display);
+    font-size: 11px;
+    color: var(--vermilion);
+    letter-spacing: 0.4em;
+    margin-bottom: 4px;
+  }
+  .week-theme {
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 4px 0 10px;
+    color: var(--ink);
+    letter-spacing: 0.1em;
+  }
+  .week-checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .week-checklist li {
+    font-size: 13px;
+    padding: 3px 0 3px 22px;
+    position: relative;
+    color: var(--ink-soft);
+    line-height: 1.85;
+  }
+  .week-checklist li::before {
+    content: '□';
+    position: absolute;
+    left: 4px;
+    color: var(--brass-deep);
+    font-weight: 700;
+  }
+  .week-target {
+    margin-top: 8px;
+    font-family: var(--display);
+    font-size: 12px;
+    color: var(--vermilion);
+    letter-spacing: 0.1em;
+  }
+  .week-target::before { content: '⌖ '; color: var(--brass); }
+
+  /* ==================== PARENT MODE (家書版) ==================== */
+  .parent-section {
+    background: var(--paper-warm);
+    padding: 22px 20px;
+    margin-bottom: 18px;
+    border: 1px solid var(--brass-deep);
+  }
+  .parent-title {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.2em;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--brass);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .parent-title::before {
+    content: '';
+    width: 5px;
+    height: 22px;
+    background: var(--vermilion);
+  }
+  .parent-greeting {
+    background: var(--paper-deep);
+    border-left: 3px solid var(--vermilion);
+    padding: 18px 20px;
+    font-size: 17px;
+    line-height: 2;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+    font-style: normal;
+  }
+  .parent-greeting::before {
+    content: '「';
+    font-family: var(--display);
+    font-size: 28px;
+    color: var(--brass-deep);
+    margin-right: 4px;
+    line-height: 0;
+    vertical-align: -8px;
+  }
+  .parent-greeting::after {
+    content: '」';
+    font-family: var(--display);
+    font-size: 28px;
+    color: var(--brass-deep);
+    margin-left: 4px;
+    line-height: 0;
+    vertical-align: -8px;
+  }
+
+  .parent-good-list {
+    background: var(--safe-paper);
+    border: 1px solid var(--safe-edge);
+    padding: 18px 20px;
+  }
+  .parent-good-list .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 16px;
+    line-height: 1.9;
+    color: #2d4a25;
+  }
+  .parent-good-list .item::before {
+    content: '✓';
+    color: var(--jade);
+    font-size: 18px;
+    flex-shrink: 0;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+
+  .parent-attention {
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    background: var(--warn-paper);
+    border: 1px solid var(--warn-edge);
+    position: relative;
+  }
+  .parent-attention.urgent {
+    background: var(--danger-paper);
+    border-color: var(--danger-edge);
+  }
+  .parent-attention .att-title {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--brass-shadow);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .parent-attention.urgent .att-title { color: var(--vermilion-deep); }
+  .parent-attention .att-body {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--ink-soft);
+  }
+
+  .parent-doctor-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--paper);
+    border: 1px solid var(--ink-soft);
+  }
+  .parent-doctor-table th {
+    background: var(--ink-soft);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 13px;
+    padding: 10px 8px;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    border-right: 1px solid rgba(244,233,207,0.2);
+  }
+  .parent-doctor-table th:last-child { border-right: none; }
+  .parent-doctor-table td {
+    font-size: 14px;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--ink-faint);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    vertical-align: middle;
+  }
+  .parent-doctor-table tr:last-child td { border-bottom: none; }
+  .parent-doctor-table .urgency-tag {
+    display: inline-block;
+    padding: 3px 8px;
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+  .parent-doctor-table .urgency-tag.high   { background: var(--vermilion); }
+  .parent-doctor-table .urgency-tag.medium { background: var(--brass-deep); }
+  .parent-doctor-table .urgency-tag.low    { background: var(--jade); }
+
+  .parent-do-dont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .parent-do, .parent-dont {
+    padding: 16px;
+  }
+  .parent-do {
+    background: var(--safe-paper);
+    border: 1px solid var(--safe-edge);
+  }
+  .parent-dont {
+    background: var(--danger-paper);
+    border: 1px solid var(--danger-edge);
+  }
+  .parent-do .box-title, .parent-dont .box-title {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed currentColor;
+    letter-spacing: 0.2em;
+  }
+  .parent-do .box-title { color: var(--jade); }
+  .parent-dont .box-title { color: var(--vermilion-deep); }
+  .parent-action-item {
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.08);
+  }
+  .parent-action-item:last-child { border-bottom: none; }
+  .parent-action-item .action-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .parent-action-item .action-reason {
+    font-size: 12px;
+    color: var(--ink-mid);
+    margin-top: 2px;
+    line-height: 1.6;
+  }
+
+  .parent-supp-list .row-item { border-bottom-color: var(--brass); }
+  .parent-supp-list .row-name { font-size: 16px; }
+  .parent-supp-list .row-detail { font-size: 13px; }
+
+  .parent-safety {
+    background: var(--paper);
+    padding: 4px 18px;
+  }
+  .parent-safety .item {
+    padding: 10px 0 10px 24px;
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--ink-soft);
+    border-bottom: 1px dashed var(--ink-faint);
+    position: relative;
+  }
+  .parent-safety .item:last-child { border-bottom: none; }
+  .parent-safety .item::before {
+    content: '◈';
+    position: absolute;
+    left: 4px;
+    top: 10px;
+    color: var(--brass-deep);
+  }
+
+  .parent-encouragement {
+    position: relative;
+    padding: 30px 26px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(212,176,99,0.12) 0%, transparent 70%),
+      var(--pine);
+    color: var(--paper);
+    text-align: center;
+    font-size: 17px;
+    line-height: 2.1;
+    margin: 0 0 20px;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--brass-deep);
+    outline: 1px solid var(--brass-deep);
+    outline-offset: 4px;
+  }
+  .parent-encouragement::before {
+    content: '寄語';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--vermilion);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 11px;
+    padding: 3px 12px;
+    letter-spacing: 0.4em;
+  }
+
+  /* ==================== DISCLAIMER ==================== */
+  .disclaimer {
+    margin-top: 30px;
+    padding: 16px 20px;
+    background: var(--paper-warm);
+    border-top: 1px solid var(--brass);
+    border-bottom: 1px solid var(--brass);
+    font-size: 11px;
+    color: var(--ink-light);
+    line-height: 1.85;
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
+  .disclaimer::before {
+    content: '醫家附語';
+    display: block;
+    font-family: var(--display);
+    font-size: 11px;
+    color: var(--brass-deep);
+    letter-spacing: 0.45em;
+    margin-bottom: 6px;
+  }
+
+  /* ==================== BOTTOM ACTIONS ==================== */
+  .bottom-actions {
+    padding: 22px 22px 36px;
+    display: flex;
+    gap: 12px;
+  }
+  .action-btn {
+    flex: 1;
+    padding: 14px 12px;
+    font-family: var(--display);
+    font-size: 14px;
+    letter-spacing: 0.4em;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid currentColor;
+    transition: all .15s;
+  }
+  .action-btn.primary {
+    background: var(--vermilion);
+    color: var(--paper);
+    border-color: var(--vermilion-deep);
+    outline: 1px solid var(--vermilion-deep);
+    outline-offset: 3px;
+    box-shadow: 0 3px 0 rgba(125,30,26,0.3);
+  }
+  .action-btn.primary:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(125,30,26,0.3); }
+  .action-btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .action-btn.secondary:active { background: var(--paper-deep); }
+
+  .signoff {
+    text-align: center;
+    padding: 0 0 28px;
+    font-family: var(--display);
+    font-size: 11px;
+    color: var(--ink-light);
+    letter-spacing: 0.4em;
+  }
+  .signoff .seal-mini {
+    display: inline-block;
+    margin: 0 6px;
+    padding: 2px 6px;
+    background: var(--vermilion);
+    color: var(--paper);
+    font-family: var(--brush);
+    letter-spacing: 0;
+  }
+
+  /* ==================== SAVE OVERLAY ==================== */
+  .save-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,32,22,0.85);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: fadeIn .3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .save-overlay .inner {
+    background: var(--paper);
+    padding: 24px 22px;
+    max-width: 380px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    border: 1px solid var(--brass);
+    outline: 1px solid var(--brass);
+    outline-offset: 4px;
+    text-align: center;
+  }
+  .save-overlay .inner h3 {
+    font-family: var(--display);
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: 0.4em;
+    margin-bottom: 6px;
+  }
+  .save-overlay .inner p {
+    font-size: 12px;
+    color: var(--ink-mid);
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .save-overlay .inner img {
+    max-width: 100%;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    border: 1px solid var(--brass);
+  }
+  .save-overlay .close-save {
+    padding: 10px 28px;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: 0.4em;
+    cursor: pointer;
+    border: 1px solid var(--ink);
+  }
+
+  /* ==================== TOAST ==================== */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 22px;
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    z-index: 2000;
+    border: 1px solid var(--brass);
+    animation: toastInOut 2.6s ease forwards;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+  @keyframes toastInOut {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    12%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+    85%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ==================== UPLOAD SCREEN ==================== -->
+  <div id="screen-upload" class="screen active">
+    <div class="hero">
+      <span class="hero-nail tl"></span>
+      <span class="hero-nail tr"></span>
+      <span class="hero-nail bl"></span>
+      <span class="hero-nail br"></span>
+
+      <div class="hero-tag">BAI CAO TANG</div>
+      <h1 class="hero-brand">流金享老</h1>
+      <div class="hero-divider">
+        <div class="line"></div>
+        <div class="glyph">百 草 堂</div>
+        <div class="line"></div>
+      </div>
+      <p class="hero-tagline">
+        <strong>AI 體檢診脈箋</strong><br>
+        投方入匣 · 立成診冊<br>
+        為長輩看懂每一項指標
+      </p>
+      <div class="hero-seal">診</div>
+    </div>
+
+    <div class="body-pad">
+      <div class="section-title">
+        <span class="han">投方入匣</span>
+        <span class="pinyin">— upload</span>
+      </div>
+
+      <div class="drug-box" id="uploadZone">
+        <span class="drug-handle"></span>
+        <span class="drug-corner tl"></span>
+        <span class="drug-corner tr"></span>
+        <span class="drug-corner bl"></span>
+        <span class="drug-corner br"></span>
+        <div class="drug-icon">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="12" y="8" width="40" height="48" rx="1"/>
+            <line x1="20" y1="20" x2="44" y2="20"/>
+            <line x1="20" y1="28" x2="44" y2="28"/>
+            <line x1="20" y1="36" x2="36" y2="36"/>
+            <circle cx="32" cy="46" r="5"/>
+            <line x1="32" y1="42" x2="32" y2="50"/>
+            <line x1="28" y1="46" x2="36" y2="46"/>
+          </svg>
+        </div>
+        <div class="drug-title">點 擊 上 傳</div>
+        <div class="drug-desc">支持圖片 與 PDF · 至多十方</div>
+        <input type="file" id="fileInput" accept="image/*,.pdf,application/pdf" multiple>
+      </div>
+
+      <div class="preview-grid" id="previewGrid"></div>
+
+      <div class="section-title">
+        <span class="han">擇診而閱</span>
+        <span class="pinyin">— choose mode</span>
+      </div>
+      <div class="mode-row">
+        <div class="mode-card selected" data-mode="pro" onclick="selectMode('pro')">
+          <span class="ribbon"></span>
+          <div class="mode-han">問脈版</div>
+          <div class="mode-desc">完整診冊·自閱</div>
+          <span class="mode-mark">選</span>
+        </div>
+        <div class="mode-card" data-mode="parent" onclick="selectMode('parent')">
+          <span class="ribbon"></span>
+          <div class="mode-han">家書版</div>
+          <div class="mode-desc">大字明話·寄家人</div>
+          <span class="mode-mark">選</span>
+        </div>
+      </div>
+
+      <div class="info-block">
+        <div class="info-toggle" onclick="toggleInfo()">
+          <span class="arrow">▶</span>
+          <span>增 補 病 歴 · 提升精準度（可選）</span>
+        </div>
+        <div class="info-fields" id="infoFields">
+          <div class="info-field">
+            <label>既 往 病 史</label>
+            <input type="text" id="infoHistory" placeholder="如：高血壓、糖尿病；無則留空">
+          </div>
+          <div class="info-field">
+            <label>家 族 病 史</label>
+            <input type="text" id="infoFamily" placeholder="如：父高血壓、母糖尿病">
+          </div>
+          <div class="info-field">
+            <label>起 居 飲 食</label>
+            <textarea id="infoLifestyle" placeholder="如：久坐辦公、每週跑步兩次、偶飲、不吸煙"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" disabled onclick="startAnalysis()">開 診</button>
+
+      <div class="footer-note">
+        百 草 堂 <span class="dot">·</span> 流 金 享 老 <span class="dot">·</span> 仙 草 所 擬
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LOADING SCREEN ==================== -->
+  <div id="screen-loading" class="screen">
+    <div class="loading-screen">
+      <div class="pulse-frame">
+        <svg class="pulse-svg" viewBox="0 0 220 90" preserveAspectRatio="none">
+          <line class="baseline" x1="0" y1="45" x2="220" y2="45"/>
+          <path d="M0,45 L30,45 L40,30 L48,60 L56,15 L66,75 L78,45 L100,45 L110,38 L118,52 L128,45 L150,45 L160,28 L168,62 L176,18 L184,72 L192,45 L220,45"/>
+        </svg>
+      </div>
+      <div class="loading-han">先 生 切 脈</div>
+      <div class="loading-step" id="loadingStep">正 在 察 色 · 識 報 上 字 句</div>
+      <div class="loading-stages" id="loadingStages">
+        <span class="stage active" data-stage="0">察色</span>
+        <span class="sep">→</span>
+        <span class="stage" data-stage="1">聞聲</span>
+        <span class="sep">→</span>
+        <span class="stage" data-stage="2">問症</span>
+        <span class="sep">→</span>
+        <span class="stage" data-stage="3">切脈</span>
+      </div>
+      <div class="progress-rail">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+      <button class="cancel-btn" onclick="cancelAnalysis()">輟 診</button>
+    </div>
+  </div>
+
+  <!-- ==================== ERROR SCREEN ==================== -->
+  <div id="screen-error" class="screen">
+    <div class="error-screen">
+      <div class="error-stamp">阻</div>
+      <div class="error-title" id="errorTitle">診 而 未 達</div>
+      <div class="error-msg" id="errorMsg">脈絡阻滯，請查網絡後再試</div>
+      <button class="retry-btn" onclick="retryAnalysis()">重 診</button>
+      <div class="back-link" onclick="startOver()">← 回 起 手</div>
+    </div>
+  </div>
+
+  <!-- ==================== REPORT SCREEN ==================== -->
+  <div id="screen-report" class="screen">
+    <div id="reportContent"></div>
+    <div class="bottom-actions">
+      <button class="action-btn secondary" onclick="startOver()">重投方</button>
+      <button class="action-btn primary" onclick="saveAsImage()">留診冊</button>
+    </div>
+    <div class="signoff">
+      流金享老 <span class="seal-mini">診</span> 百草堂
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== STATE ====================
+let selectedFiles = [];
+let selectedMode = 'pro';
+let ocrData = null;
+let abortController = null;
+
+// ==================== FILE UPLOAD ====================
+const uploadZone  = document.getElementById('uploadZone');
+const fileInput   = document.getElementById('fileInput');
+const previewGrid = document.getElementById('previewGrid');
+const submitBtn   = document.getElementById('submitBtn');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', handleFiles);
+
+uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  const files = Array.from(e.dataTransfer.files).filter(f =>
+    f.type.startsWith('image/') || f.type === 'application/pdf' ||
+    f.name.toLowerCase().endsWith('.pdf')
+  );
+  addFiles(files);
+});
+
+function handleFiles(e) {
+  addFiles(Array.from(e.target.files));
+  e.target.value = '';
+}
+
+function addFiles(files) {
+  if (selectedFiles.length + files.length > 10) {
+    showToast('至多十方');
+    files = files.slice(0, 10 - selectedFiles.length);
+  }
+  selectedFiles.push(...files);
+  renderPreviews();
+  submitBtn.disabled = selectedFiles.length === 0;
+}
+
+function removeFile(index) {
+  selectedFiles.splice(index, 1);
+  renderPreviews();
+  submitBtn.disabled = selectedFiles.length === 0;
+}
+
+function renderPreviews() {
+  previewGrid.innerHTML = selectedFiles.map((file, i) => {
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (isPdf) {
+      return `<div class="preview-item">
+        <div class="pdf-placeholder">
+          <div class="pdf-icon">PDF</div>
+          <div class="pdf-name">${esc(file.name)}</div>
+        </div>
+        <button class="remove" onclick="removeFile(${i})" aria-label="移除">×</button>
+      </div>`;
+    }
+    const url = URL.createObjectURL(file);
+    return `<div class="preview-item">
+      <img src="${url}" alt="第${i+1}方">
+      <button class="remove" onclick="removeFile(${i})" aria-label="移除">×</button>
+    </div>`;
+  }).join('');
+}
+
+// ==================== MODE ====================
+function selectMode(mode) {
+  selectedMode = mode;
+  document.querySelectorAll('.mode-card').forEach(c => {
+    c.classList.toggle('selected', c.dataset.mode === mode);
+  });
+}
+
+function toggleInfo() {
+  const toggle = document.querySelector('.info-toggle');
+  const fields = document.getElementById('infoFields');
+  toggle.classList.toggle('open');
+  fields.classList.toggle('open');
+}
+
+// ==================== ANALYSIS ====================
+const STAGES = [
+  '正 在 察 色 · 識 報 上 字 句',
+  '正 在 聞 聲 · 辨 報 上 數 值',
+  '正 在 問 症 · 思 患 者 之 情',
+  '正 在 切 脈 · 擬 調 養 之 方',
+];
+
+function setStage(index) {
+  document.querySelectorAll('#loadingStages .stage').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+    el.classList.toggle('done', i < index);
+  });
+}
+
+async function startAnalysis() {
+  if (selectedFiles.length === 0) return;
+  abortController = new AbortController();
+  showScreen('loading');
+  setStage(0);
+  updateProgress(10, STAGES[0]);
+
+  try {
+    const formData = new FormData();
+    selectedFiles.forEach(f => formData.append('images', f));
+
+    setStage(1);
+    updateProgress(25, STAGES[1]);
+
+    const ocrRes = await fetch('/api/ocr', {
+      method: 'POST',
+      body: formData,
+      signal: abortController.signal
+    });
+    const ocrJson = await ocrRes.json();
+    if (!ocrRes.ok || ocrJson.error) {
+      throw new Error(ocrJson.error || '識報失敗');
+    }
+    ocrData = ocrJson.data;
+
+    setStage(2);
+    updateProgress(48, STAGES[2]);
+
+    const userInfo = buildUserInfo();
+    const analyzeRes = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ocrData, mode: selectedMode, userInfo }),
+      signal: abortController.signal
+    });
+
+    setStage(3);
+    updateProgress(55, STAGES[3]);
+
+    const reader = analyzeRes.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let report = null;
+    let chunkCount = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const data = JSON.parse(line.slice(6));
+          if (data.type === 'chunk') {
+            chunkCount++;
+            const pct = Math.min(55 + Math.floor(chunkCount / 2), 95);
+            updateProgress(pct, STAGES[3]);
+          } else if (data.type === 'done') {
+            report = data.report;
+          } else if (data.type === 'error') {
+            throw new Error(data.message);
+          }
+        } catch (e) {
+          if (e.message !== 'Unexpected end of JSON input') console.warn('SSE parse:', e);
+        }
+      }
+    }
+
+    if (!report) throw new Error('診冊未成，請再試');
+
+    updateProgress(100, '診冊已成');
+    await new Promise(r => setTimeout(r, 400));
+    renderReport(report, ocrData);
+    showScreen('report');
+
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      showScreen('upload');
+      showToast('已 輟 診');
+      return;
+    }
+    console.error(err);
+    showError('診 而 未 達', err.message || '脈絡阻滯，請查網絡後再試');
+  }
+}
+
+function cancelAnalysis() {
+  if (abortController) {
+    abortController.abort();
+    abortController = null;
+  }
+}
+
+function retryAnalysis() { startAnalysis(); }
+
+function buildUserInfo() {
+  const parts = [];
+  const history   = document.getElementById('infoHistory').value.trim();
+  const family    = document.getElementById('infoFamily').value.trim();
+  const lifestyle = document.getElementById('infoLifestyle').value.trim();
+  if (history)   parts.push('既往病史: ' + history);
+  if (family)    parts.push('家族病史: ' + family);
+  if (lifestyle) parts.push('生活习惯: ' + lifestyle);
+  return parts.join('\n') || '';
+}
+
+// ==================== SCREENS ====================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function showError(title, msg) {
+  document.getElementById('errorTitle').textContent = title;
+  document.getElementById('errorMsg').textContent   = msg;
+  showScreen('error');
+}
+
+function updateProgress(pct, text) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  if (text) document.getElementById('loadingStep').textContent = text;
+}
+
+function startOver() {
+  selectedFiles = [];
+  ocrData = null;
+  renderPreviews();
+  submitBtn.disabled = true;
+  showScreen('upload');
+}
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2700);
+}
+
+// ==================== RENDER REPORT ====================
+function renderReport(report, ocr) {
+  const container = document.getElementById('reportContent');
+  container.innerHTML = selectedMode === 'parent'
+    ? renderParentReport(report, ocr)
+    : renderProReport(report, ocr);
+}
+
+function lunarLikeDate() {
+  const now = new Date();
+  const m = now.getMonth() + 1;
+  const d = now.getDate();
+  return `${now.getFullYear()}年 ${m}月 ${d}日`;
+}
+
+function tierClass(score) {
+  if (score >= 90) return 'tier-1';
+  if (score >= 80) return 'tier-2';
+  if (score >= 70) return 'tier-3';
+  if (score >= 60) return 'tier-4';
+  return 'tier-5';
+}
+
+function severityClass(severity) {
+  return severity === 'high' ? 'urgent' : 'watch';
+}
+
+function renderProReport(r, ocr) {
+  const patient = ocr?.patient || {};
+  const name = patient.name || '健康患者';
+  const meta = [
+    patient.gender,
+    patient.age ? patient.age + '歲' : null,
+    patient.bmi ? 'BMI ' + patient.bmi : null,
+  ].filter(Boolean).join(' · ');
+
+  let html = '';
+
+  // 封面
+  html += `<div class="report-cover">
+    <div class="cover-brand-row">流 金 享 老 · 百 草 堂</div>
+    <h1 class="cover-title">診 脈 箋</h1>
+    <div class="cover-subtitle">— AI HEALTH SCROLL —</div>
+    <div class="cover-meta">
+      <span class="han">受 診</span>${esc(name)}${meta ? ' · ' + esc(meta) : ''}<br>
+      <span class="han">日 期</span>${lunarLikeDate()} · AI 診
+    </div>
+    <div class="cover-stamp">診</div>
+  </div>`;
+
+  html += '<div class="report-body">';
+
+  // Score 體質評等
+  if (r.score) {
+    html += `<div class="score-card">
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+      <div class="label">體 質 評 等</div>
+      <div class="score-num">
+        <span class="big">${r.score.total}</span>
+        <span class="slash">/</span>
+        <span class="max">100</span>
+      </div>
+      ${r.score.level ? `<div class="score-level ${tierClass(r.score.total)}">${esc(r.score.level)}</div>` : ''}
+      ${r.score.summary ? `<div class="score-summary">${esc(r.score.summary)}</div>` : ''}
+    </div>`;
+  }
+
+  // Red flags 急症需診
+  if (r.red_flags?.length) {
+    html += `<div class="section-card open">
+      <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stamp urgent">急</div>
+        <div class="han">急症需診</div>
+        <div class="pinyin">CRITICAL</div>
+        <div class="count urgent">${r.red_flags.length}項</div>
+        <div class="chevron">+</div>
+      </div>
+      <div class="section-content">
+        ${r.red_flags.map(f => `<div class="flag-item urgent">
+          <div class="flag-title">${esc(f.title)}</div>
+          ${f.indicators?.length ? f.indicators.map(ind => `<div class="indicator-row">
+            <span class="ind-name">${esc(ind.name)}</span>
+            <span class="ind-value ${ind.status === 'high' ? 'ind-high' : ind.status === 'low' ? 'ind-low' : 'ind-normal'}">${esc(ind.value)}</span>
+            <span class="ind-ref">${esc(ind.reference || '')}</span>
+          </div>`).join('') : ''}
+          ${f.explanation ? `<div class="flag-body">${esc(f.explanation)}</div>` : ''}
+          ${f.cause ? `<div class="flag-body" style="margin-top:6px;color:var(--ink-mid)"><em>因：${esc(f.cause)}</em></div>` : ''}
+          ${f.action ? `<div class="flag-action">${esc(f.action)}</div>` : ''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Yellow flags 待觀之症
+  if (r.yellow_flags?.length) {
+    html += `<div class="section-card">
+      <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stamp watch">察</div>
+        <div class="han">待觀之症</div>
+        <div class="pinyin">WATCH</div>
+        <div class="count watch">${r.yellow_flags.length}項</div>
+        <div class="chevron">+</div>
+      </div>
+      <div class="section-content">
+        ${r.yellow_flags.map(f => `<div class="flag-item watch">
+          <div class="flag-title">${esc(f.title)}${f.value ? ' · <span style="font-family:var(--display);color:var(--brass-deep)">'+esc(f.value)+'</span>' : ''}</div>
+          ${f.description ? `<div class="flag-body">${esc(f.description)}</div>` : ''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Green flags 安和之徵
+  if (r.green_flags?.length) {
+    html += `<div class="section-card">
+      <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stamp safe">安</div>
+        <div class="han">安和之徵</div>
+        <div class="pinyin">NORMAL</div>
+        <div class="count safe">${r.green_flags.length}項</div>
+        <div class="chevron">+</div>
+      </div>
+      <div class="section-content">
+        <div class="green-list">
+          ${r.green_flags.map(g => `<span class="green-tag">${esc(g)}</span>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Patterns 經絡同病
+  if (r.patterns?.length) {
+    html += `<div class="section-card">
+      <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stamp">絡</div>
+        <div class="han">經絡同病</div>
+        <div class="pinyin">PATTERNS</div>
+        <div class="chevron">+</div>
+      </div>
+      <div class="section-content">
+        ${r.patterns.map(p => `<div class="flag-item ${p.status === 'hit' ? 'urgent' : 'watch'}">
+          <div class="flag-title">${esc(p.name)}</div>
+          ${p.description ? `<div class="flag-body">${esc(p.description)}</div>` : ''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Risks 三五年警示
+  if (r.risks?.length) {
+    html += `<div class="section-card">
+      <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stamp watch">警</div>
+        <div class="han">三五年警示</div>
+        <div class="pinyin">FORESIGHT</div>
+        <div class="chevron">+</div>
+      </div>
+      <div class="section-content">
+        ${r.risks.map(rk => {
+          const lvl = Math.max(1, Math.min(3, rk.level || 1));
+          const stars = '◆'.repeat(lvl) + '◇'.repeat(3 - lvl);
+          return `<div class="risk-row">
+            <div class="risk-head">
+              <span class="risk-stars">${stars}</span>
+              <span class="risk-name">${esc(rk.name)}</span>
+            </div>
+            ${rk.path ? `<div class="risk-path">${esc(rk.path)}</div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Plan
+  if (r.plan) {
+    const p = r.plan;
+
+    if (p.diet) {
+      html += `<div class="section-card">
+        <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="stamp">食</div>
+          <div class="han">食 療</div>
+          <div class="pinyin">DIET</div>
+          <div class="chevron">+</div>
+        </div>
+        <div class="section-content">
+          <div class="plan-block">
+            ${p.diet.principle ? `<div class="principle">${esc(p.diet.principle)}</div>` : ''}
+            <div class="food-grid">
+              <div class="food-box good">
+                <div class="box-title">宜 食</div>
+                ${(p.diet.recommend || []).map(f => `<div class="item">· ${esc(f)}</div>`).join('')}
+              </div>
+              <div class="food-box bad">
+                <div class="box-title">忌 口</div>
+                ${(p.diet.avoid || []).map(f => `<div class="item">· ${esc(f)}</div>`).join('')}
+              </div>
+            </div>
+            ${p.diet.sample_menu ? `<div style="margin-top:12px;padding:10px;background:var(--paper-warm);border:1px dashed var(--brass);font-size:13px;line-height:1.85;color:var(--ink-soft)"><strong style="font-family:var(--display);color:var(--vermilion-deep);letter-spacing:0.15em">三 餐 示 例</strong><br>${esc(p.diet.sample_menu)}</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    if (p.exercise) {
+      html += `<div class="section-card">
+        <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="stamp">動</div>
+          <div class="han">導 引</div>
+          <div class="pinyin">EXERCISE</div>
+          <div class="chevron">+</div>
+        </div>
+        <div class="section-content">
+          <div class="plan-block">
+            ${p.exercise.principle ? `<div class="principle">${esc(p.exercise.principle)}</div>` : ''}
+            ${p.exercise.weekly?.length ? `<div class="exercise-grid">
+              ${p.exercise.weekly.map(d => `<div class="exercise-day">
+                <div class="d-label">${esc((d.day || '').replace('周', '').replace('星期', '') || '日')}</div>
+                <div class="d-icon">${d.icon || '◆'}</div>
+                <div class="d-type">${esc(d.type || '')}</div>
+              </div>`).join('')}
+            </div>` : ''}
+            ${p.exercise.caution ? `<div style="font-size:13px;color:var(--vermilion-deep);margin-top:12px;padding:8px 12px;background:var(--danger-paper);border-left:3px solid var(--vermilion)">慎 ｜ ${esc(p.exercise.caution)}</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    if (p.supplements?.length) {
+      html += `<div class="section-card">
+        <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="stamp">補</div>
+          <div class="han">進 補</div>
+          <div class="pinyin">SUPPLEMENTS</div>
+          <div class="chevron">+</div>
+        </div>
+        <div class="section-content">
+          ${p.supplements.map(s => {
+            const lvl = Math.max(1, Math.min(3, s.priority || 1));
+            return `<div class="row-item">
+              <div class="row-prio">${'◆'.repeat(lvl)}</div>
+              <div class="row-info">
+                <div class="row-name">${esc(s.name)}</div>
+                <div class="row-detail">${esc(s.reason || '')}${s.timing ? ' · ' + esc(s.timing) : ''}</div>
+              </div>
+              <div class="row-tail">${esc(s.dose || '')}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }
+
+    if (p.followup?.length) {
+      html += `<div class="section-card open">
+        <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="stamp urgent">復</div>
+          <div class="han">復 診</div>
+          <div class="pinyin">FOLLOW-UP</div>
+          <div class="chevron">+</div>
+        </div>
+        <div class="section-content">
+          ${p.followup.map(f => `<div class="row-item">
+            <div class="followup-time urgency-${f.urgency || 'low'}">${esc(f.time)}</div>
+            <div class="row-info">
+              <div class="row-name">${esc(f.department)}</div>
+              <div class="row-detail">${esc(f.action)}</div>
+            </div>
+            <div class="row-tail">${f.urgency === 'high' ? '緊' : f.urgency === 'medium' ? '重' : '常'}</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }
+
+    if (p.sleep || p.lifestyle?.length) {
+      html += `<div class="section-card">
+        <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+          <div class="stamp">眠</div>
+          <div class="han">起 居</div>
+          <div class="pinyin">LIFESTYLE</div>
+          <div class="chevron">+</div>
+        </div>
+        <div class="section-content">
+          ${p.sleep ? `<div class="plan-block">
+            ${p.sleep.bedtime ? `<div class="principle">建議 ${esc(p.sleep.bedtime)} 入眠</div>` : ''}
+            <ul class="plan-list">${(p.sleep.tips || []).map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+          </div>` : ''}
+          ${p.lifestyle?.length ? `<div class="plan-block">
+            <div class="principle">起居要訣</div>
+            <ul class="plan-list">${p.lifestyle.map(l => `<li>${esc(l)}</li>`).join('')}</ul>
+          </div>` : ''}
+        </div>
+      </div>`;
+    }
+  }
+
+  // Monthly plan 三十日方
+  if (r.monthly_plan) {
+    html += `<div class="section-card">
+      <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
+        <div class="stamp">期</div>
+        <div class="han">三十日方</div>
+        <div class="pinyin">30-DAY</div>
+        <div class="chevron">+</div>
+      </div>
+      <div class="section-content">
+        ${r.monthly_plan.goals?.length ? `<div style="margin-bottom:14px">
+          <div style="font-family:var(--display);font-size:12px;color:var(--vermilion);letter-spacing:0.4em;margin-bottom:8px">本 期 之 目</div>
+          ${r.monthly_plan.goals.map((g, i) => `<div style="font-size:14px;font-weight:500;padding:3px 0;color:var(--ink)">${i+1}. ${esc(g)}</div>`).join('')}
+        </div>` : ''}
+        ${(r.monthly_plan.weeks || []).map(w => `<div class="week-card">
+          <div class="week-label">第 ${w.week} 周</div>
+          <div class="week-theme">${esc(w.theme)}</div>
+          <ul class="week-checklist">${(w.checklist || []).map(c => `<li>${esc(c)}</li>`).join('')}</ul>
+          ${w.target ? `<div class="week-target">${esc(w.target)}</div>` : ''}
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Disclaimer
+  html += `<div class="disclaimer">${esc(r.disclaimer || '本診冊由 AI 仙草所擬，非真醫所診，僅供調養參考；異常需赴院遵醫囑。')}</div>`;
+
+  html += '</div>';
+  return html;
+}
+
+function renderParentReport(r, ocr) {
+  const patient = ocr?.patient || {};
+  const name = patient.name || '長輩';
+  let html = '';
+
+  html += `<div class="report-cover">
+    <div class="cover-brand-row">流 金 享 老 · 百 草 堂</div>
+    <h1 class="cover-title">家 書 · 健 康</h1>
+    <div class="cover-subtitle">— A LETTER OF CARE —</div>
+    <div class="cover-meta">
+      <span class="han">收 信</span>${esc(name)}<br>
+      <span class="han">日 期</span>${lunarLikeDate()}
+    </div>
+    <div class="cover-stamp">家</div>
+  </div>`;
+
+  html += '<div class="report-body">';
+
+  if (r.greeting) {
+    html += `<div class="parent-greeting">${esc(r.greeting)}</div>`;
+  }
+
+  if (r.good_news?.length) {
+    html += `<div class="parent-section">
+      <div class="parent-title">這次體檢的好消息</div>
+      <div class="parent-good-list">
+        ${r.good_news.map(g => `<div class="item">${esc(g)}</div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if (r.attention?.length) {
+    html += `<div class="parent-section">
+      <div class="parent-title">需要注意的事</div>
+      ${r.attention.map((a, i) => `<div class="parent-attention ${i === 0 ? 'urgent' : ''}">
+        <div class="att-title">${a.icon ? a.icon + ' ' : ''}${esc(a.title)}</div>
+        <div class="att-body">${esc(a.description)}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if (r.doctors?.length) {
+    html += `<div class="parent-section">
+      <div class="parent-title">該掛哪個科</div>
+      <table class="parent-doctor-table">
+        <thead><tr><th>什麼時候</th><th>掛什麼科</th><th>去做什麼</th></tr></thead>
+        <tbody>${r.doctors.map(d => `<tr>
+          <td><span class="urgency-tag ${d.urgency || 'low'}">${esc(d.time)}</span></td>
+          <td><strong style="font-family:var(--display);color:var(--ink);letter-spacing:0.1em">${esc(d.department)}</strong></td>
+          <td>${esc(d.action)}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+  }
+
+  if (r.do_list?.length || r.dont_list?.length) {
+    html += `<div class="parent-section">
+      <div class="parent-title">每天要做 / 不能做</div>
+      <div class="parent-do-dont">
+        <div class="parent-do">
+          <div class="box-title">要 做</div>
+          ${(r.do_list || []).map(d => `<div class="parent-action-item">
+            <div class="action-text">${d.icon ? d.icon + ' ' : ''}${esc(d.action)}</div>
+            ${d.reason ? `<div class="action-reason">${esc(d.reason)}</div>` : ''}
+          </div>`).join('')}
+        </div>
+        <div class="parent-dont">
+          <div class="box-title">不 做</div>
+          ${(r.dont_list || []).map(d => `<div class="parent-action-item">
+            <div class="action-text">${d.icon ? d.icon + ' ' : ''}${esc(d.action)}</div>
+            ${d.reason ? `<div class="action-reason">${esc(d.reason)}</div>` : ''}
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (r.supplements?.length) {
+    html += `<div class="parent-section">
+      <div class="parent-title">建議買的保健品</div>
+      <div class="parent-supp-list">
+        ${r.supplements.map(s => `<div class="row-item">
+          <div class="row-prio">${s.icon || '◆'}</div>
+          <div class="row-info">
+            <div class="row-name">${esc(s.name)}</div>
+            <div class="row-detail">${esc(s.how || '')}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if (r.safety_tips?.length) {
+    html += `<div class="parent-section">
+      <div class="parent-title">家裡要注意的</div>
+      <div class="parent-safety">
+        ${r.safety_tips.map(t => `<div class="item">${esc(t)}</div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if (r.encouragement) {
+    html += `<div class="parent-encouragement">${esc(r.encouragement)}</div>`;
+  }
+
+  html += `<div class="disclaimer">${esc(r.disclaimer || '此信由 AI 輔助所擬，僅供參考，非醫家所斷；身體不適請即就醫。')}</div>`;
+
+  html += '</div>';
+  return html;
+}
+
+// ==================== SAVE AS IMAGE ====================
+async function saveAsImage() {
+  showToast('正 在 留 冊…');
+  try {
+    const reportEl = document.getElementById('reportContent');
+    reportEl.querySelectorAll('.section-card').forEach(c => c.classList.add('open'));
+
+    const canvas = await html2canvas(reportEl, {
+      scale: 2,
+      backgroundColor: '#f4e9cf',
+      useCORS: true,
+      logging: false,
+      windowWidth: 460,
+    });
+    const dataUrl = canvas.toDataURL('image/png');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'save-overlay';
+    overlay.innerHTML = `
+      <div class="inner">
+        <h3>診 冊 長 圖</h3>
+        <p>長按圖片保存到相冊，發給家人</p>
+        <img src="${dataUrl}" alt="診冊長圖">
+        <br>
+        <button class="close-save" onclick="this.closest('.save-overlay').remove()">收 起</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.remove();
+    });
+  } catch (err) {
+    console.error('Save image error:', err);
+    if (navigator.share) {
+      navigator.share({
+        title: '流金享老 · AI 體檢診脈箋',
+        text: '為長輩做的 AI 體檢解讀，看看吧',
+        url: window.location.href
+      }).catch(() => {});
+    } else {
+      showToast('生成失敗，請截屏');
+    }
+  }
+}
+
+// ==================== UTILS ====================
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>
