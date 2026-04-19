@@ -33,6 +33,7 @@ const client = new OpenAI({
   baseURL: process.env.DASHSCOPE_BASE_URL,
 });
 const MODEL = process.env.DASHSCOPE_MODEL || 'qwen-plus';
+const VL_MODEL = process.env.DASHSCOPE_VL_MODEL || 'qwen-vl-plus';
 const ENABLE_THINKING = process.env.ENABLE_THINKING === 'true';
 
 // ============ PROMPTS ============
@@ -366,7 +367,8 @@ app.post('/api/ocr', upload.array('images', 10), async (req, res) => {
           console.error('Text after clean:', text.substring(0, 500));
         }
       } catch (innerErr) {
-        console.error('Process file error:', file.originalname, innerErr.message);
+        console.error('Process file error:', file.originalname, innerErr.message, innerErr.stack);
+        allIndicators._lastError = `${file.originalname}: ${innerErr.message}`;
       }
     }
 
@@ -374,7 +376,8 @@ app.post('/api/ocr', upload.array('images', 10), async (req, res) => {
       if (allIndicators._scannedPdfDetected) {
         return res.status(422).json({ error: '这是扫描件 PDF（内部没有可读文字），请把每页分别截图后以图片方式上传' });
       }
-      return res.status(422).json({ error: '未能从报告中识别出体检指标，请确认文件清晰度，或尝试拍照上传' });
+      const debugInfo = allIndicators._lastError || '无详细错误';
+      return res.status(422).json({ error: `未能识别体检指标 [${debugInfo}]` });
     }
 
     delete allIndicators._scannedPdfDetected;
