@@ -1,12 +1,10 @@
 {
   "functions": {
     "api/server.js": {
-      "maxDuration": 60,
-      "memory": 1024
+      "maxDuration": 60
     }
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/server" }
-  ],
-  "regions": ["hkg1"]
+  ]
 }
