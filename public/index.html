@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#1a2419">
-<title>流金享老 · AI 體檢診脈箋</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23a83232'/><text x='50' y='72' font-size='62' text-anchor='middle' fill='%23f4e9cf' font-family='serif' font-weight='700'>診</text></svg>">
+<title>流金享老 · AI 体检诊脉笺</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23a83232'/><text x='50' y='72' font-size='62' text-anchor='middle' fill='%23f4e9cf' font-family='serif' font-weight='700'>诊</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <link rel="preconnect" href="https://fonts.loli.net" crossorigin>
 <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
@@ -27,7 +27,7 @@
     --paper-deep: #e1d2a8;
     --kraft:      #d8c39a;
 
-    /* 松煙 */
+    /* 松烟 */
     --pine:       #142016;
     --pine-soft:  #1f2d22;
     --pine-mid:   #2c3c2d;
@@ -99,7 +99,7 @@
     to { opacity: 1; transform: none; }
   }
 
-  /* ==================== HERO (松煙 黑漆櫃) ==================== */
+  /* ==================== HERO (松烟 黑漆櫃) ==================== */
   .hero {
     position: relative;
     padding: 56px 32px 56px;
@@ -231,7 +231,7 @@
   /* ==================== BODY (宣紙) ==================== */
   .body-pad { padding: 36px 24px 60px; }
 
-  /* 章標題 */
+  /* 章标題 */
   .section-title {
     display: flex;
     align-items: center;
@@ -399,7 +399,7 @@
     border: 1px solid var(--brass);
   }
 
-  /* ==================== MODE CARDS (兩本診冊) ==================== */
+  /* ==================== MODE CARDS (两本诊册) ==================== */
   .mode-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -574,7 +574,7 @@
     margin: 0 6px;
   }
 
-  /* ==================== LOADING (切脈) ==================== */
+  /* ==================== LOADING (切脉) ==================== */
   .loading-screen {
     display: flex;
     flex-direction: column;
@@ -756,7 +756,7 @@
     text-underline-offset: 4px;
   }
 
-  /* ==================== REPORT (診脈箋) ==================== */
+  /* ==================== REPORT (诊脉笺) ==================== */
   .report-cover {
     position: relative;
     padding: 40px 28px 30px;
@@ -841,7 +841,7 @@
     padding: 32px 22px 18px;
   }
 
-  /* Score 體質評等 */
+  /* Score 体质評等 */
   .score-card {
     position: relative;
     background: var(--paper-warm);
@@ -1051,7 +1051,7 @@
   .ind-low  { color: var(--brass-deep); }
   .ind-normal { color: var(--jade); }
 
-  /* Green tags 安和之徵 */
+  /* Green tags 安和之征 */
   .green-list {
     display: flex;
     flex-wrap: wrap;
@@ -1091,7 +1091,7 @@
     position: relative;
   }
   .plan-block .principle::before {
-    content: '訣';
+    content: '诀';
     position: absolute;
     left: 0; top: 0;
     width: 14px; height: 14px;
@@ -1316,7 +1316,7 @@
   }
   .week-target::before { content: '⌖ '; color: var(--brass); }
 
-  /* ==================== PARENT MODE (家書版) ==================== */
+  /* ==================== PARENT MODE (家书版) ==================== */
   .parent-section {
     background: var(--paper-warm);
     padding: 22px 20px;
@@ -1545,7 +1545,7 @@
     outline-offset: 4px;
   }
   .parent-encouragement::before {
-    content: '寄語';
+    content: '寄语';
     position: absolute;
     top: -10px;
     left: 50%;
@@ -1572,7 +1572,7 @@
     letter-spacing: 0.08em;
   }
   .disclaimer::before {
-    content: '醫家附語';
+    content: '医家附语';
     display: block;
     font-family: var(--display);
     font-size: 11px;
@@ -1734,11 +1734,11 @@
         <div class="line"></div>
       </div>
       <p class="hero-tagline">
-        <strong>AI 體檢診脈箋</strong><br>
-        投方入匣 · 立成診冊<br>
-        為長輩看懂每一項指標
+        <strong>AI 体检诊脉笺</strong><br>
+        投方入匣 · 立成诊册<br>
+        为长辈看懂每一项指标
       </p>
-      <div class="hero-seal">診</div>
+      <div class="hero-seal">诊</div>
     </div>
 
     <div class="body-pad">
@@ -1764,57 +1764,57 @@
             <line x1="28" y1="46" x2="36" y2="46"/>
           </svg>
         </div>
-        <div class="drug-title">點 擊 上 傳</div>
-        <div class="drug-desc">支持圖片 與 PDF · 至多十方</div>
+        <div class="drug-title">点 击 上 传</div>
+        <div class="drug-desc">支持图片 与 PDF · 至多十方</div>
         <input type="file" id="fileInput" accept="image/*,.pdf,application/pdf" multiple>
       </div>
 
       <div class="preview-grid" id="previewGrid"></div>
 
       <div class="section-title">
-        <span class="han">擇診而閱</span>
+        <span class="han">择诊而阅</span>
         <span class="pinyin">— choose mode</span>
       </div>
       <div class="mode-row">
         <div class="mode-card selected" data-mode="pro" onclick="selectMode('pro')">
           <span class="ribbon"></span>
-          <div class="mode-han">問脈版</div>
-          <div class="mode-desc">完整診冊·自閱</div>
-          <span class="mode-mark">選</span>
+          <div class="mode-han">问脉版</div>
+          <div class="mode-desc">完整诊册·自阅</div>
+          <span class="mode-mark">选</span>
         </div>
         <div class="mode-card" data-mode="parent" onclick="selectMode('parent')">
           <span class="ribbon"></span>
-          <div class="mode-han">家書版</div>
-          <div class="mode-desc">大字明話·寄家人</div>
-          <span class="mode-mark">選</span>
+          <div class="mode-han">家书版</div>
+          <div class="mode-desc">大字明话·寄家人</div>
+          <span class="mode-mark">选</span>
         </div>
       </div>
 
       <div class="info-block">
         <div class="info-toggle" onclick="toggleInfo()">
           <span class="arrow">▶</span>
-          <span>增 補 病 歴 · 提升精準度（可選）</span>
+          <span>增 补 病 历 · 提升精准度（可选）</span>
         </div>
         <div class="info-fields" id="infoFields">
           <div class="info-field">
             <label>既 往 病 史</label>
-            <input type="text" id="infoHistory" placeholder="如：高血壓、糖尿病；無則留空">
+            <input type="text" id="infoHistory" placeholder="如：高血压、糖尿病；无則留空">
           </div>
           <div class="info-field">
             <label>家 族 病 史</label>
-            <input type="text" id="infoFamily" placeholder="如：父高血壓、母糖尿病">
+            <input type="text" id="infoFamily" placeholder="如：父高血压、母糖尿病">
           </div>
           <div class="info-field">
-            <label>起 居 飲 食</label>
-            <textarea id="infoLifestyle" placeholder="如：久坐辦公、每週跑步兩次、偶飲、不吸煙"></textarea>
+            <label>起 居 饮 食</label>
+            <textarea id="infoLifestyle" placeholder="如：久坐办公、每周跑步两次、偶饮、不吸烟"></textarea>
           </div>
         </div>
       </div>
 
-      <button class="submit-btn" id="submitBtn" disabled onclick="startAnalysis()">開 診</button>
+      <button class="submit-btn" id="submitBtn" disabled onclick="startAnalysis()">开 诊</button>
 
       <div class="footer-note">
-        百 草 堂 <span class="dot">·</span> 流 金 享 老 <span class="dot">·</span> 仙 草 所 擬
+        百 草 堂 <span class="dot">·</span> 流 金 享 老 <span class="dot">·</span> 仙 草 所 拟
       </div>
     </div>
   </div>
@@ -1828,21 +1828,21 @@
           <path d="M0,45 L30,45 L40,30 L48,60 L56,15 L66,75 L78,45 L100,45 L110,38 L118,52 L128,45 L150,45 L160,28 L168,62 L176,18 L184,72 L192,45 L220,45"/>
         </svg>
       </div>
-      <div class="loading-han">先 生 切 脈</div>
-      <div class="loading-step" id="loadingStep">正 在 察 色 · 識 報 上 字 句</div>
+      <div class="loading-han">先 生 切 脉</div>
+      <div class="loading-step" id="loadingStep">正 在 察 色 · 识 报 上 字 句</div>
       <div class="loading-stages" id="loadingStages">
         <span class="stage active" data-stage="0">察色</span>
         <span class="sep">→</span>
-        <span class="stage" data-stage="1">聞聲</span>
+        <span class="stage" data-stage="1">闻声</span>
         <span class="sep">→</span>
-        <span class="stage" data-stage="2">問症</span>
+        <span class="stage" data-stage="2">问症</span>
         <span class="sep">→</span>
-        <span class="stage" data-stage="3">切脈</span>
+        <span class="stage" data-stage="3">切脉</span>
       </div>
       <div class="progress-rail">
         <div class="progress-fill" id="progressBar"></div>
       </div>
-      <button class="cancel-btn" onclick="cancelAnalysis()">輟 診</button>
+      <button class="cancel-btn" onclick="cancelAnalysis()">辍 诊</button>
     </div>
   </div>
 
@@ -1850,9 +1850,9 @@
   <div id="screen-error" class="screen">
     <div class="error-screen">
       <div class="error-stamp">阻</div>
-      <div class="error-title" id="errorTitle">診 而 未 達</div>
-      <div class="error-msg" id="errorMsg">脈絡阻滯，請查網絡後再試</div>
-      <button class="retry-btn" onclick="retryAnalysis()">重 診</button>
+      <div class="error-title" id="errorTitle">诊 而 未 达</div>
+      <div class="error-msg" id="errorMsg">脉络阻滞，请查网络后再试</div>
+      <button class="retry-btn" onclick="retryAnalysis()">重 诊</button>
       <div class="back-link" onclick="startOver()">← 回 起 手</div>
     </div>
   </div>
@@ -1862,10 +1862,10 @@
     <div id="reportContent"></div>
     <div class="bottom-actions">
       <button class="action-btn secondary" onclick="startOver()">重投方</button>
-      <button class="action-btn primary" onclick="saveAsImage()">留診冊</button>
+      <button class="action-btn primary" onclick="saveAsImage()">留诊册</button>
     </div>
     <div class="signoff">
-      流金享老 <span class="seal-mini">診</span> 百草堂
+      流金享老 <span class="seal-mini">诊</span> 百草堂
     </div>
   </div>
 </div>
@@ -1956,10 +1956,10 @@ function toggleInfo() {
 
 // ==================== ANALYSIS ====================
 const STAGES = [
-  '正 在 察 色 · 識 報 上 字 句',
-  '正 在 聞 聲 · 辨 報 上 數 值',
-  '正 在 問 症 · 思 患 者 之 情',
-  '正 在 切 脈 · 擬 調 養 之 方',
+  '正 在 察 色 · 识 报 上 字 句',
+  '正 在 闻 声 · 辨 报 上 数 值',
+  '正 在 问 症 · 思 患 者 之 情',
+  '正 在 切 脉 · 拟 调 养 之 方',
 ];
 
 function setStage(index) {
@@ -1990,7 +1990,7 @@ async function startAnalysis() {
     });
     const ocrJson = await ocrRes.json();
     if (!ocrRes.ok || ocrJson.error) {
-      throw new Error(ocrJson.error || '識報失敗');
+      throw new Error(ocrJson.error || '识报失敗');
     }
     ocrData = ocrJson.data;
 
@@ -2039,9 +2039,9 @@ async function startAnalysis() {
       }
     }
 
-    if (!report) throw new Error('診冊未成，請再試');
+    if (!report) throw new Error('诊册未成，请再试');
 
-    updateProgress(100, '診冊已成');
+    updateProgress(100, '诊册已成');
     await new Promise(r => setTimeout(r, 400));
     renderReport(report, ocrData);
     showScreen('report');
@@ -2049,11 +2049,11 @@ async function startAnalysis() {
   } catch (err) {
     if (err.name === 'AbortError') {
       showScreen('upload');
-      showToast('已 輟 診');
+      showToast('已 辍 诊');
       return;
     }
     console.error(err);
-    showError('診 而 未 達', err.message || '脈絡阻滯，請查網絡後再試');
+    showError('诊 而 未 达', err.message || '脉络阻滞，请查网络后再试');
   }
 }
 
@@ -2143,7 +2143,7 @@ function renderProReport(r, ocr) {
   const name = patient.name || '健康患者';
   const meta = [
     patient.gender,
-    patient.age ? patient.age + '歲' : null,
+    patient.age ? patient.age + '岁' : null,
     patient.bmi ? 'BMI ' + patient.bmi : null,
   ].filter(Boolean).join(' · ');
 
@@ -2152,23 +2152,23 @@ function renderProReport(r, ocr) {
   // 封面
   html += `<div class="report-cover">
     <div class="cover-brand-row">流 金 享 老 · 百 草 堂</div>
-    <h1 class="cover-title">診 脈 箋</h1>
+    <h1 class="cover-title">诊 脉 笺</h1>
     <div class="cover-subtitle">— AI HEALTH SCROLL —</div>
     <div class="cover-meta">
-      <span class="han">受 診</span>${esc(name)}${meta ? ' · ' + esc(meta) : ''}<br>
-      <span class="han">日 期</span>${lunarLikeDate()} · AI 診
+      <span class="han">受 诊</span>${esc(name)}${meta ? ' · ' + esc(meta) : ''}<br>
+      <span class="han">日 期</span>${lunarLikeDate()} · AI 诊
     </div>
-    <div class="cover-stamp">診</div>
+    <div class="cover-stamp">诊</div>
   </div>`;
 
   html += '<div class="report-body">';
 
-  // Score 體質評等
+  // Score 体质評等
   if (r.score) {
     html += `<div class="score-card">
       <span class="corner tl"></span><span class="corner tr"></span>
       <span class="corner bl"></span><span class="corner br"></span>
-      <div class="label">體 質 評 等</div>
+      <div class="label">体 质 評 等</div>
       <div class="score-num">
         <span class="big">${r.score.total}</span>
         <span class="slash">/</span>
@@ -2179,14 +2179,14 @@ function renderProReport(r, ocr) {
     </div>`;
   }
 
-  // Red flags 急症需診
+  // Red flags 急症需诊
   if (r.red_flags?.length) {
     html += `<div class="section-card open">
       <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
         <div class="stamp urgent">急</div>
-        <div class="han">急症需診</div>
+        <div class="han">急症需诊</div>
         <div class="pinyin">CRITICAL</div>
-        <div class="count urgent">${r.red_flags.length}項</div>
+        <div class="count urgent">${r.red_flags.length}项</div>
         <div class="chevron">+</div>
       </div>
       <div class="section-content">
@@ -2205,14 +2205,14 @@ function renderProReport(r, ocr) {
     </div>`;
   }
 
-  // Yellow flags 待觀之症
+  // Yellow flags 待观之症
   if (r.yellow_flags?.length) {
     html += `<div class="section-card">
       <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
         <div class="stamp watch">察</div>
-        <div class="han">待觀之症</div>
+        <div class="han">待观之症</div>
         <div class="pinyin">WATCH</div>
-        <div class="count watch">${r.yellow_flags.length}項</div>
+        <div class="count watch">${r.yellow_flags.length}项</div>
         <div class="chevron">+</div>
       </div>
       <div class="section-content">
@@ -2224,14 +2224,14 @@ function renderProReport(r, ocr) {
     </div>`;
   }
 
-  // Green flags 安和之徵
+  // Green flags 安和之征
   if (r.green_flags?.length) {
     html += `<div class="section-card">
       <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
         <div class="stamp safe">安</div>
-        <div class="han">安和之徵</div>
+        <div class="han">安和之征</div>
         <div class="pinyin">NORMAL</div>
-        <div class="count safe">${r.green_flags.length}項</div>
+        <div class="count safe">${r.green_flags.length}项</div>
         <div class="chevron">+</div>
       </div>
       <div class="section-content">
@@ -2242,12 +2242,12 @@ function renderProReport(r, ocr) {
     </div>`;
   }
 
-  // Patterns 經絡同病
+  // Patterns 经络同病
   if (r.patterns?.length) {
     html += `<div class="section-card">
       <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
-        <div class="stamp">絡</div>
-        <div class="han">經絡同病</div>
+        <div class="stamp">络</div>
+        <div class="han">经络同病</div>
         <div class="pinyin">PATTERNS</div>
         <div class="chevron">+</div>
       </div>
@@ -2293,7 +2293,7 @@ function renderProReport(r, ocr) {
       html += `<div class="section-card">
         <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
           <div class="stamp">食</div>
-          <div class="han">食 療</div>
+          <div class="han">食 疗</div>
           <div class="pinyin">DIET</div>
           <div class="chevron">+</div>
         </div>
@@ -2319,8 +2319,8 @@ function renderProReport(r, ocr) {
     if (p.exercise) {
       html += `<div class="section-card">
         <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
-          <div class="stamp">動</div>
-          <div class="han">導 引</div>
+          <div class="stamp">动</div>
+          <div class="han">导 引</div>
           <div class="pinyin">EXERCISE</div>
           <div class="chevron">+</div>
         </div>
@@ -2343,8 +2343,8 @@ function renderProReport(r, ocr) {
     if (p.supplements?.length) {
       html += `<div class="section-card">
         <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
-          <div class="stamp">補</div>
-          <div class="han">進 補</div>
+          <div class="stamp">补</div>
+          <div class="han">进 补</div>
           <div class="pinyin">SUPPLEMENTS</div>
           <div class="chevron">+</div>
         </div>
@@ -2367,8 +2367,8 @@ function renderProReport(r, ocr) {
     if (p.followup?.length) {
       html += `<div class="section-card open">
         <div class="section-head" onclick="this.parentElement.classList.toggle('open')">
-          <div class="stamp urgent">復</div>
-          <div class="han">復 診</div>
+          <div class="stamp urgent">复</div>
+          <div class="han">复 诊</div>
           <div class="pinyin">FOLLOW-UP</div>
           <div class="chevron">+</div>
         </div>
@@ -2379,7 +2379,7 @@ function renderProReport(r, ocr) {
               <div class="row-name">${esc(f.department)}</div>
               <div class="row-detail">${esc(f.action)}</div>
             </div>
-            <div class="row-tail">${f.urgency === 'high' ? '緊' : f.urgency === 'medium' ? '重' : '常'}</div>
+            <div class="row-tail">${f.urgency === 'high' ? '紧' : f.urgency === 'medium' ? '重' : '常'}</div>
           </div>`).join('')}
         </div>
       </div>`;
@@ -2395,11 +2395,11 @@ function renderProReport(r, ocr) {
         </div>
         <div class="section-content">
           ${p.sleep ? `<div class="plan-block">
-            ${p.sleep.bedtime ? `<div class="principle">建議 ${esc(p.sleep.bedtime)} 入眠</div>` : ''}
+            ${p.sleep.bedtime ? `<div class="principle">建议 ${esc(p.sleep.bedtime)} 入眠</div>` : ''}
             <ul class="plan-list">${(p.sleep.tips || []).map(t => `<li>${esc(t)}</li>`).join('')}</ul>
           </div>` : ''}
           ${p.lifestyle?.length ? `<div class="plan-block">
-            <div class="principle">起居要訣</div>
+            <div class="principle">起居要诀</div>
             <ul class="plan-list">${p.lifestyle.map(l => `<li>${esc(l)}</li>`).join('')}</ul>
           </div>` : ''}
         </div>
@@ -2432,7 +2432,7 @@ function renderProReport(r, ocr) {
   }
 
   // Disclaimer
-  html += `<div class="disclaimer">${esc(r.disclaimer || '本診冊由 AI 仙草所擬，非真醫所診，僅供調養參考；異常需赴院遵醫囑。')}</div>`;
+  html += `<div class="disclaimer">${esc(r.disclaimer || '本诊册由 AI 仙草所拟，非真医所诊，仅供调养参考；异常需赴院遵医嘱。')}</div>`;
 
   html += '</div>';
   return html;
@@ -2440,12 +2440,12 @@ function renderProReport(r, ocr) {
 
 function renderParentReport(r, ocr) {
   const patient = ocr?.patient || {};
-  const name = patient.name || '長輩';
+  const name = patient.name || '长辈';
   let html = '';
 
   html += `<div class="report-cover">
     <div class="cover-brand-row">流 金 享 老 · 百 草 堂</div>
-    <h1 class="cover-title">家 書 · 健 康</h1>
+    <h1 class="cover-title">家 书 · 健 康</h1>
     <div class="cover-subtitle">— A LETTER OF CARE —</div>
     <div class="cover-meta">
       <span class="han">收 信</span>${esc(name)}<br>
@@ -2462,7 +2462,7 @@ function renderParentReport(r, ocr) {
 
   if (r.good_news?.length) {
     html += `<div class="parent-section">
-      <div class="parent-title">這次體檢的好消息</div>
+      <div class="parent-title">这次体检的好消息</div>
       <div class="parent-good-list">
         ${r.good_news.map(g => `<div class="item">${esc(g)}</div>`).join('')}
       </div>
@@ -2481,9 +2481,9 @@ function renderParentReport(r, ocr) {
 
   if (r.doctors?.length) {
     html += `<div class="parent-section">
-      <div class="parent-title">該掛哪個科</div>
+      <div class="parent-title">该挂哪个科</div>
       <table class="parent-doctor-table">
-        <thead><tr><th>什麼時候</th><th>掛什麼科</th><th>去做什麼</th></tr></thead>
+        <thead><tr><th>什么时候</th><th>挂什么科</th><th>去做什么</th></tr></thead>
         <tbody>${r.doctors.map(d => `<tr>
           <td><span class="urgency-tag ${d.urgency || 'low'}">${esc(d.time)}</span></td>
           <td><strong style="font-family:var(--display);color:var(--ink);letter-spacing:0.1em">${esc(d.department)}</strong></td>
@@ -2517,7 +2517,7 @@ function renderParentReport(r, ocr) {
 
   if (r.supplements?.length) {
     html += `<div class="parent-section">
-      <div class="parent-title">建議買的保健品</div>
+      <div class="parent-title">建议买的保健品</div>
       <div class="parent-supp-list">
         ${r.supplements.map(s => `<div class="row-item">
           <div class="row-prio">${s.icon || '◆'}</div>
@@ -2532,7 +2532,7 @@ function renderParentReport(r, ocr) {
 
   if (r.safety_tips?.length) {
     html += `<div class="parent-section">
-      <div class="parent-title">家裡要注意的</div>
+      <div class="parent-title">家里要注意的</div>
       <div class="parent-safety">
         ${r.safety_tips.map(t => `<div class="item">${esc(t)}</div>`).join('')}
       </div>
@@ -2543,7 +2543,7 @@ function renderParentReport(r, ocr) {
     html += `<div class="parent-encouragement">${esc(r.encouragement)}</div>`;
   }
 
-  html += `<div class="disclaimer">${esc(r.disclaimer || '此信由 AI 輔助所擬，僅供參考，非醫家所斷；身體不適請即就醫。')}</div>`;
+  html += `<div class="disclaimer">${esc(r.disclaimer || '此信由 AI 辅助所拟，仅供参考，非医家所断；身体不适请即就医。')}</div>`;
 
   html += '</div>';
   return html;
@@ -2551,7 +2551,7 @@ function renderParentReport(r, ocr) {
 
 // ==================== SAVE AS IMAGE ====================
 async function saveAsImage() {
-  showToast('正 在 留 冊…');
+  showToast('正 在 留 册…');
   try {
     const reportEl = document.getElementById('reportContent');
     reportEl.querySelectorAll('.section-card').forEach(c => c.classList.add('open'));
@@ -2569,9 +2569,9 @@ async function saveAsImage() {
     overlay.className = 'save-overlay';
     overlay.innerHTML = `
       <div class="inner">
-        <h3>診 冊 長 圖</h3>
-        <p>長按圖片保存到相冊，發給家人</p>
-        <img src="${dataUrl}" alt="診冊長圖">
+        <h3>诊 册 长 图</h3>
+        <p>长按图片保存到相册，发給家人</p>
+        <img src="${dataUrl}" alt="诊册长图">
         <br>
         <button class="close-save" onclick="this.closest('.save-overlay').remove()">收 起</button>
       </div>
@@ -2584,12 +2584,12 @@ async function saveAsImage() {
     console.error('Save image error:', err);
     if (navigator.share) {
       navigator.share({
-        title: '流金享老 · AI 體檢診脈箋',
-        text: '為長輩做的 AI 體檢解讀，看看吧',
+        title: '流金享老 · AI 体检诊脉笺',
+        text: '为长辈做的 AI 体检解读，看看吧',
         url: window.location.href
       }).catch(() => {});
     } else {
-      showToast('生成失敗，請截屏');
+      showToast('生成失敗，请截屏');
     }
   }
 }

@@ -34,6 +34,8 @@ const client = new OpenAI({
 });
 const MODEL = process.env.DASHSCOPE_MODEL || 'qwen-plus';
 const VL_MODEL = process.env.DASHSCOPE_VL_MODEL || 'qwen-vl-plus';
+// PDF 文本 OCR 只是结构化抽取，turbo 够用且快 2-3 倍；图片 OCR 仍走 MODEL（vision）。
+const OCR_TEXT_MODEL = process.env.DASHSCOPE_OCR_TEXT_MODEL || 'qwen-turbo';
 const ENABLE_THINKING = process.env.ENABLE_THINKING === 'true';
 
 // ============ PROMPTS ============
@@ -272,6 +274,36 @@ function buildParentOutputSpec() {
 }`;
 }
 
+// 被 max_tokens 截断时，回退到最后一个完整 "}," 并补齐括号；失败返回 null
+function repairTruncatedJson(text) {
+  if (!text) return null;
+  // 找到最后一个完整的对象结束位置
+  let lastGoodEnd = -1;
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (escape) { escape = false; continue; }
+    if (ch === '\\') { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === '{' || ch === '[') depth++;
+    else if (ch === '}' || ch === ']') {
+      depth--;
+      if (depth === 1) lastGoodEnd = i; // 对象 / 数组元素边界（最外层 {} 为 depth 0）
+    }
+  }
+  if (lastGoodEnd < 0) return null;
+  // 截到最后一个完整元素，闭合 indicators / imaging 数组和最外层对象
+  let head = text.substring(0, lastGoodEnd + 1);
+  // 试错式闭合：最多补 3 层 ]/}（indicators 或 imaging + 最外层）
+  for (const tail of ['\n]\n}', '\n]}', '}', ']}']) {
+    try { JSON.parse(head + tail); return head + tail; } catch (_) { /* try next */ }
+  }
+  return null;
+}
+
 // ============ ROUTES ============
 
 // Step 1: Upload image(s)/PDF → OCR extract
@@ -281,45 +313,35 @@ app.post('/api/ocr', upload.array('images', 10), async (req, res) => {
       return res.status(400).json({ error: '请上传体检报告（图片或PDF）' });
     }
 
-    const allIndicators = { patient: null, indicators: [], imaging: [] };
-
-    for (const file of req.files) {
-      // Vercel 兼容：直接从 buffer 读取，不走磁盘
+    // 并行处理每个文件（N 个文件从串行 N×t 降到 max(t)）
+    const t0 = Date.now();
+    const results = await Promise.all(req.files.map(async (file) => {
+      const out = { patient: null, indicators: [], imaging: [], scanned: false, error: null };
       const fileBuffer = file.buffer;
       const isPdf = file.mimetype === 'application/pdf' ||
                     path.extname(file.originalname).toLowerCase() === '.pdf';
 
-      let response;
-
       try {
+        let response;
         if (isPdf) {
-          // PDF → 提取文本 → 纯文本 prompt
           const pdfData = await pdfParse(fileBuffer);
           const pdfText = pdfData.text;
-
           if (!pdfText || pdfText.trim().length < 20) {
-            console.warn('PDF text too short, possibly scanned image PDF:', file.originalname);
-            allIndicators._scannedPdfDetected = true;
-            continue;
+            console.warn('[ocr] scanned pdf (no text):', file.originalname);
+            out.scanned = true;
+            return out;
           }
-
-          // 截取前 15000 字符防止 token 超限
           const truncated = pdfText.substring(0, 15000);
-
           response = await client.chat.completions.create({
-            model: MODEL,
-            messages: [
-              { role: 'user', content: buildPdfOcrPrompt(truncated) }
-            ],
-            max_tokens: 16384,
+            model: OCR_TEXT_MODEL,
+            messages: [{ role: 'user', content: buildPdfOcrPrompt(truncated) }],
+            max_tokens: 12288,
             temperature: 0.1,
             enable_thinking: ENABLE_THINKING,
           });
         } else {
-          // 图片 → base64 → vision
           const base64 = fileBuffer.toString('base64');
           const mimeType = file.mimetype || 'image/jpeg';
-
           response = await client.chat.completions.create({
             model: MODEL,
             messages: [
@@ -331,16 +353,13 @@ app.post('/api/ocr', upload.array('images', 10), async (req, res) => {
                 ]
               }
             ],
-            max_tokens: 16384,
+            max_tokens: 12288,
             temperature: 0.1,
             enable_thinking: ENABLE_THINKING,
           });
         }
 
         let text = response.choices[0]?.message?.content || '';
-        console.log('=== AI Response Start ===');
-        console.log('Length:', text.length);
-        console.log('First 300:', text.substring(0, 300));
         text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
         text = text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
         const jsonStart = text.indexOf('{');
@@ -348,39 +367,63 @@ app.post('/api/ocr', upload.array('images', 10), async (req, res) => {
         if (jsonStart >= 0 && jsonEnd > jsonStart) {
           text = text.substring(jsonStart, jsonEnd + 1);
         }
-        console.log('After clean, first 200:', text.substring(0, 200));
 
+        let parsed;
         try {
-          const parsed = JSON.parse(text);
-          console.log('Parsed OK, indicators:', parsed.indicators?.length, 'imaging:', parsed.imaging?.length);
-          if (parsed.patient && !allIndicators.patient) {
-            allIndicators.patient = parsed.patient;
-          }
-          if (parsed.indicators) {
-            allIndicators.indicators.push(...parsed.indicators);
-          }
-          if (parsed.imaging) {
-            allIndicators.imaging.push(...parsed.imaging);
-          }
+          parsed = JSON.parse(text);
         } catch (e) {
-          console.error('OCR parse error for file:', file.originalname, e.message);
-          console.error('Text after clean:', text.substring(0, 500));
+          // max_tokens 截断常发生在 indicators 数组中间某对象。
+          // 策略：从末尾回退到最后一个完整 `},` 位置，截掉半截对象再补齐括号。
+          const repaired = repairTruncatedJson(text);
+          if (repaired) {
+            try {
+              parsed = JSON.parse(repaired);
+              console.warn('[ocr] %s repaired from truncation, recovered %d indicators', file.originalname, parsed.indicators?.length || 0);
+            } catch (e2) {
+              console.error('[ocr] parse + repair failed %s: %s', file.originalname, e.message);
+              console.error('preview:', text.substring(0, 300));
+              out.error = 'parse: ' + e.message;
+            }
+          } else {
+            console.error('[ocr] parse error %s: %s', file.originalname, e.message);
+            console.error('preview:', text.substring(0, 300));
+            out.error = 'parse: ' + e.message;
+          }
+        }
+        if (parsed) {
+          console.log('[ocr] %s ok, indicators=%d imaging=%d', file.originalname, parsed.indicators?.length || 0, parsed.imaging?.length || 0);
+          out.patient = parsed.patient || null;
+          out.indicators = parsed.indicators || [];
+          out.imaging = parsed.imaging || [];
         }
       } catch (innerErr) {
-        console.error('Process file error:', file.originalname, innerErr.message, innerErr.stack);
-        allIndicators._lastError = `${file.originalname}: ${innerErr.message}`;
+        console.error('[ocr] process error %s:', file.originalname, innerErr.message);
+        out.error = `${file.originalname}: ${innerErr.message}`;
       }
+      return out;
+    }));
+
+    console.log('[ocr] all files done in %dms (n=%d)', Date.now() - t0, req.files.length);
+
+    // 合并结果
+    const allIndicators = { patient: null, indicators: [], imaging: [] };
+    let scannedPdfDetected = false;
+    let lastError = null;
+    for (const r of results) {
+      if (r.scanned) scannedPdfDetected = true;
+      if (r.error) lastError = r.error;
+      if (r.patient && !allIndicators.patient) allIndicators.patient = r.patient;
+      if (r.indicators?.length) allIndicators.indicators.push(...r.indicators);
+      if (r.imaging?.length) allIndicators.imaging.push(...r.imaging);
     }
 
     if (allIndicators.indicators.length === 0 && allIndicators.imaging.length === 0) {
-      if (allIndicators._scannedPdfDetected) {
+      if (scannedPdfDetected) {
         return res.status(422).json({ error: '这是扫描件 PDF（内部没有可读文字），请把每页分别截图后以图片方式上传' });
       }
-      const debugInfo = allIndicators._lastError || '无详细错误';
-      return res.status(422).json({ error: `未能识别体检指标 [${debugInfo}]` });
+      return res.status(422).json({ error: `未能识别体检指标 [${lastError || '无详细错误'}]` });
     }
 
-    delete allIndicators._scannedPdfDetected;
     res.json({ success: true, data: allIndicators });
   } catch (err) {
     console.error('OCR error:', err);
@@ -432,7 +475,7 @@ app.post('/api/analyze', async (req, res) => {
     const stream = await client.chat.completions.create({
       model: MODEL,
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 8192,
+      max_tokens: 6144,
       temperature: 0.3,
       stream: true,
       enable_thinking: ENABLE_THINKING,
